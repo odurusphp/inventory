@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
     <meta name="description" content=""/>
     <meta name="author" content=""/>
-    <title>RL- Micro Ventures</title>
+    <title>Inventory System</title>
     <!--favicon-->
     <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
     <!-- Bootstrap core CSS-->
@@ -29,12 +29,12 @@
         <div class="card-body">
             <div class="card-content p-2">
                 <div class="text-center">
-                    <img src="/backoffice/images/logo.fw.png">
+                    <img src="<?php echo URLROOT.'/backoffice/'?>/images/logo.png" class="logo-icon" alt="logo icon">
                 </div>
                 <?php  if(isset($data['message'])) {  ?>
                 <div align="center" style="color:red"><?php  echo $data['message']; ?></div>
                 <?php }  ?>
-                <div class="card-title text-uppercase text-center py-3">Sign In</div>
+                <div class="card-title text-uppercase text-center py-3">Provide Login Credentials</div>
                 <form method="post">
                     <div class="form-group">
                         <div class="position-relative has-icon-right">

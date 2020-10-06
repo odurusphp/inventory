@@ -6,8 +6,7 @@
  * Time: 10:26 AM
  */
 
-class tableDataObject{
-
+class tableDataObject {
     protected $dataColumns;
     public $tableName;
     public $primaryKey;
@@ -15,7 +14,6 @@ class tableDataObject{
 
     /**
      * tableDataObject constructor.
-     *
      * @param mixed $objectid
      *
      * $objectid - value to look up as the primary key (automatically detected) in object instantiation
@@ -39,10 +37,8 @@ class tableDataObject{
      * IMPORTANT UPDATE: changing the constructor here such that it only accepts one parameter,
      * which will be searched for in the primary key of the table!
      *
-     * @throws frameworkError
      */
-    public function __construct($objectid = null){
-
+    public function __construct($objectid = null) {
         $child = get_class($this);
         $tablename = $child::TABLENAME;
 
@@ -64,24 +60,27 @@ class tableDataObject{
          * If fieldname is not specified, an object is returned with all the columns of the specified table
          * as properties, but with null values.
          */
-        if(isset($objectid)){
+        if (isset($objectid)) {
+            ini_set('display_errors', false);
             $conditions = array($this->primaryKey => $objectid);
-            $getarecord = self::getRecordByParams($this->tableName,$conditions);
-            if((!$getarecord) || count($getarecord) !== 1){
-                throw new frameworkError("Error: Zero or multiple records returned when trying to create a tableDataObject!");
-            } else {
-                foreach ( $getarecord as $fieldname => $value ) {
+            $getarecord = self::getRecordByParams($this->tableName, $conditions);
+
+            $reccount = (isset($getarecord) ? count($getarecord) : 0);
+
+            if ($reccount == 1) {
+                foreach ($getarecord as $fieldname => $value) {
                     $this->recordObject->$fieldname = $value;
                 }
+            } else {
+                // next line can be enabled to debug additional logging of conditions if consistent TDO errors occur, normally do not enable this.
+                // new Logger("Debugging Bitdefender API issue","error",null,serialize([$this->tableName,$conditions]));
+                throw new frameworkError("Error: Zero or multiple records returned when trying to create a tableDataObject!");
             }
-
         } else {
-            foreach($this->dataColumns->columns as $colname => $colMeta){
+            foreach ($this->dataColumns->columns as $colname => $colMeta) {
                 $this->recordObject->$colname = null;
             }
         }
-
-
     }
 
     /*
@@ -108,41 +107,69 @@ class tableDataObject{
      *	'logtimestamp' => '2018-01-07 12:33:25'
      *	);
      *
-     */
-    /**
-     * @param $table
-     * @param $conditions
-     * @param bool $returnarray
+     * 30 December 2018 - this function has beenb further extended to support
+     * testing against null / not null. Just use these in conditions, example:
+     * $conditions = [
+     *     'must_be_null'     => 'null',
+     *     'must_not_be_null' => 'notnull',
+     *     'example_color'    => 'red'
+     * ];
      *
-     * @return array|mixed|null
-     * @throws frameworkError
      */
-    public static function getRecordByParams($table, $conditions,$returnarray = false){
-        global $fdadb;
+    public static function getRecordByParams($table, $conditions, $returnarray = false, $join = null) {
+        global $connectedDb;
 
-        if(!is_array($conditions)){
+        if (!is_array($conditions)) {
             throw new frameworkError("Error: conditions for finding an object must be a key => value pair array");
         }
 
-        foreach ($conditions as $cfield => $cvalue){
-            $prewhere[] =  $cfield . " = :" . $cfield;
+        foreach ($conditions as $cfield => $cvalue) {
+            if(strtolower($cvalue) == 'null') {
+                $prewhere[] = $cfield . " is null ";
+            } elseif (strtolower($cvalue) == 'notnull'){
+                $prewhere[] = $cfield . " is not null ";
+            } else {
+                $prewhere[] = $cfield . " = :" . $cfield;
+            }
         }
         $wherec = implode(" and ", $prewhere);
 
-        $fdadb->prepare(
-            "select * from $table where $wherec"
-        );
-        foreach ($conditions as $cfield => $cvalue){
-            $fdadb->bind(":$cfield", $cvalue);
+        $baseq = "select * from $table";
+
+        /*
+         * 02-12-2018 - adding the ability to join tables to support EDI.
+         * This change is designed to maintain backward compatibility.
+         * TODO: document this
+         *
+         * Devs: should be obvious how to use this if you read the code.
+         */
+        if (isset($join) && is_array($join)){
+            $ltable = $table;
+            $jtable = $join['table'];
+            $jtype = $join['type'];
+            $jleftkey = $join['left'];
+            $jrightkey = $join['right'];
+
+            $joinclause = "\n$jtype join $jtable on $ltable.$jleftkey = $jtable.$jrightkey\n";
+            $baseq .= $joinclause;
+        }
+
+        $postjoin = $baseq . "\nwhere $wherec";
+
+        $connectedDb->prepare($postjoin);
+        foreach ($conditions as $cfield => $cvalue) {
+            if(strtolower($cvalue) != "null" && strtolower($cvalue) != "notnull") {
+                $connectedDb->bind( ":$cfield", $cvalue );
+            }
         }
 
         // get the information from the child class and the table
         $objClass = get_called_class();
         $tableinfo = self::getTableInfo($table);
         $primaryKey = $tableinfo->primaryKey;
-        $rowbyparam = $fdadb->resultSet();
+        $rowbyparam = $connectedDb->resultSet();
 
-        if(count($rowbyparam) ==0){
+        if (count($rowbyparam) ==0) {
             /* TODO - this is a bug waiting to happen. Need to figure out
              * what to do here if nothing is found on a primary key search.
              *
@@ -152,11 +179,18 @@ class tableDataObject{
              *
              */
             $output = null;
-        } elseif(count($rowbyparam) == 1){
+        /*
+         * TODO - evaluate fixing single-item returns as array!
+         *
+         * There are unfortunately now places where we have ugly
+         * hacks in place to loop through returns from
+         * getRecordByParams if there is a single result...
+         */
+        } elseif (count($rowbyparam) == 1) {
             $output = $rowbyparam[0];
         } else {
             // we MIGHT want to return a loopable array tableDataObjects.
-            if($returnarray){
+            if ($returnarray) {
                 $output = $rowbyparam;
             } else {
                 foreach ($rowbyparam as $dataobject) {
@@ -166,53 +200,14 @@ class tableDataObject{
         }
 
         return $output;
-
-
-
     }
 
+    public static function listAll($extraSQL = array(), $createObjects = false) {
+        $objClass = get_called_class();
+        $tableinfo = self::getTableInfo(static::TABLENAME);
+        $primaryKey = $tableinfo->primaryKey;
 
-
-    public static function RecordCount(){
-
-        $child = get_called_class();
-        $tablename = $child::TABLENAME;
-        $tableinfo = self::getTableInfo($tablename);
-
-        global $fdadb;
-        $fdadb->prepare("select count(*) as recordcount from $tablename");
-        $getcount = $fdadb->fetchColumn();
-        return $getcount;
-    }
-
-
-    /**
-     * @param bool $createObjects
-     * @param null $clausearray
-     *
-     * @return array|mixed
-     * @throws frameworkError
-     */
-	public static function listAll($createObjects = false, $clausearray = null){
-	    $objClass = get_called_class();
-	    $tableinfo = self::getTableInfo(static::TABLENAME);
-	    $primaryKey = $tableinfo->primaryKey;
-
-
-      isset($clausearray['limit']) ? $limit = ' LIMIT '. $clausearray['limit']  : $limit = '';
-      isset($clausearray['orderby']) ? $orderby = ' ORDER BY ' .$clausearray['orderby']  : $orderby = '';
-
-      if(isset($clausearray['offset'])){
-         $offsetvalues = explode(',', $clausearray['offset']);
-         $offset = ' LIMIT '. $offsetvalues[0] . ' OFFSET '. $offsetvalues[0];
-      }else{
-        $offset = '';
-      }
-
-      $clausequery =  $orderby. ' '. $limit. ' '. $offset ;
-
-
-    	/*
+        /*
     	 * modifying here to force listAll to order by primary key.
     	 * Useful during migration of users and customers.
     	 * todo: extend this method to accept an order by parameter
@@ -222,34 +217,39 @@ class tableDataObject{
         $tablename = $child::TABLENAME;
         $tableinfo = self::getTableInfo($tablename);
 
-        global $fdadb;
-        if($clausearray == null){
-        $fdadb->prepare("select * from $tablename order by $tableinfo->primaryKey");
-        }else{
-           $fdadb->prepare("select * from $tablename $clausequery");
+        global $connectedDb;
+        $listQ = "select * from $tablename";
+
+        /*
+         * Finally time to add some extra power to the TDO, mainly the
+         * ability to do things like ORDER BY, LIMIT and OFFSET.
+         *
+         * Initially we are only going to handle ORDER BY.
+         */
+        if (isset($extraSQL['order by'])) {
+            $listQ .= " order by " . $extraSQL['order by'];
+        } else {
+            // default order will be by primary kex
+            $listQ .= " order by $tableinfo->primaryKey";
         }
 
-        if (!$createObjects){
-        	$results = $fdadb->resultSet();
+        $connectedDb->prepare($listQ);
+
+        if (!$createObjects) {
+            $results = $connectedDb->resultSet();
         } else {
-        	foreach ($fdadb->resultSet() as $resultrecord){
-        		$results[] = new $objClass($resultrecord->$primaryKey);
-	        }
+            foreach ($connectedDb->resultSet() as $resultrecord) {
+                $results[] = new $objClass($resultrecord->$primaryKey);
+            }
         }
         return $results;
     }
 
-    /**
-     * @param bool $forcenulls
-     *
-     * @return $this
-     * @throws frameworkError
-     */
-    public function store($forcenulls = false){
-        global $fdadb;
+    public function store($forcenulls = false) {
+        global $connectedDb;
         // grabbing the value of the primaryKey property just for clarity using it as a dynamic property of recordObject
         $pk = $this->primaryKey;
-        if(!isset($this->tableName) || !isset($this->recordObject)){
+        if (!isset($this->tableName) || !isset($this->recordObject)) {
             throw new frameworkError("Error storing tableDataObject - missing tableName or recordObject");
         }
 
@@ -262,9 +262,8 @@ class tableDataObject{
          * Otherwise, database errors could result from erroneously adding extra properties to the
          * recordObject.
          */
-
         $dcounts = 0;
-        foreach ($this->recordObject as $field => $value){
+        foreach ($this->recordObject as $field => $value) {
             /*
              * IMPORTANT - VERY IMPORTANT!
              * Previous behavior here would throw an error if there were items in recordObject that
@@ -279,27 +278,26 @@ class tableDataObject{
              * like with the frameworkJob. It breaks other places where we need implicit nulls
              * for column default values.
              */
-
-	        if($forcenulls === false) {
-		        if ( $field != $this->primaryKey && isset( $value ) && array_key_exists( $field, $this->dataColumns->columns ) ) {
-			        $fields[ $dcounts ]  = $field;
-			        $binders[ $dcounts ] = ":" . $field;
-			        $values[ $dcounts ]  = $value;
-			        $dcounts ++;
-		        }
-	        } else {
-		        if ( $field != $this->primaryKey && array_key_exists( $field, $this->dataColumns->columns ) ) {
-			        $fields[ $dcounts ] = $field;
-			        if ( isset( $value ) ) {
-				        $binders[ $dcounts ] = ":" . $field;
-				        $values[ $dcounts ]  = $value;
-			        } else {
-				        $binders[ $dcounts ] = "null";
-				        $values[ $dcounts ]  = null;
-			        }
-			        $dcounts ++;
-		        }
-	        }
+            if ($forcenulls === false) {
+                if ($field != $this->primaryKey && isset($value) && array_key_exists($field, $this->dataColumns->columns)) {
+                    $fields[ $dcounts ]  = $field;
+                    $binders[ $dcounts ] = ":" . $field;
+                    $values[ $dcounts ]  = $value;
+                    $dcounts ++;
+                }
+            } else {
+                if ($field != $this->primaryKey && array_key_exists($field, $this->dataColumns->columns)) {
+                    $fields[ $dcounts ] = $field;
+                    if (isset($value)) {
+                        $binders[ $dcounts ] = ":" . $field;
+                        $values[ $dcounts ]  = $value;
+                    } else {
+                        $binders[ $dcounts ] = "null";
+                        $values[ $dcounts ]  = null;
+                    }
+                    $dcounts ++;
+                }
+            }
         }
 
         /*
@@ -309,15 +307,15 @@ class tableDataObject{
          * at any rate, this is where the queries differ, and thus the way we make the prepared statement differs,
          * depending on insert or update.
          */
-        if(!isset($this->recordObject->$pk)){
+        if (!isset($this->recordObject->$pk)) {
             $mode = 'insert';
 
             // need to do an insert...
 
-            $ifields = implode(",",$fields);
-            $ibinders = implode(",",$binders);
+            $ifields = implode(",", $fields);
+            $ibinders = implode(",", $binders);
             $pqry = "insert into $this->tableName ($ifields) values ($ibinders)";
-            $fdadb->prepare($pqry);
+            $connectedDb->prepare($pqry);
         } else {
             $mode = 'update';
 
@@ -334,8 +332,12 @@ class tableDataObject{
              *
              * TODO - bind the where clause properly.
              */
-            $pqry = "update $this->tableName set $isetters where $pk = '" . $this->recordObject->$pk ."'";
-            $fdadb->prepare($pqry);
+            if(isset($isetters)) {
+                $pqry = "update " .  $this->tableName . " set " . $isetters . " where $pk = '" . $this->recordObject->$pk . "'";
+                $connectedDb->prepare( $pqry );
+            } else {
+                throw new frameworkError("Problem in store method of TDO preparing query!");
+            }
         }
         /*
          * Now again the following code is the same whether we are doing an insert or an update.
@@ -343,12 +345,12 @@ class tableDataObject{
          */
         for ($fcount = 0; $fcount < count($fields); $fcount++) {
             if (isset($values[$fcount])) {
-                $fdadb->bind($binders[$fcount], $values[$fcount]);
+                $connectedDb->bind($binders[$fcount], $values[$fcount]);
             }
         }
-        if ($fdadb->execute()){
-            if($mode == 'insert'){
-                $this->recordObject->$pk = $fdadb->lastInsertId();
+        if ($connectedDb->execute()) {
+            if ($mode == 'insert') {
+                $this->recordObject->$pk = $connectedDb->lastInsertId();
             }
             return $this;
         } else {
@@ -358,41 +360,33 @@ class tableDataObject{
              */
             throw new frameworkError("error in inserting or updating tableDataObject");
         }
-
-
     }
 
-    /**
-     * @return bool
-     * @throws frameworkError
-     */
-    public function deleteFromDB(){
-    	global $fdadb;
-    	$tablename = $this->tableName;
-    	$pk = $this->primaryKey;
-    	$pkval = $this->recordObject->$pk;
+    public function deleteFromDB() {
+        global $connectedDb;
+        $tablename = $this->tableName;
+        $pk = $this->primaryKey;
+        $pkval = $this->recordObject->$pk;
 
-    	$delsql = "delete from $tablename where $pk = '$pkval'";
-    	$fdadb->prepare($delsql);
-    	if($fdadb->execute()){
-    		foreach($this as $property => $value){
-    			unset($this->$property);
-		    }
-    		return true;
-	    } else {
-    		return false;
-	    }
+        $delsql = "delete from $tablename where $pk = '$pkval'";
+        $connectedDb->prepare($delsql);
+        if ($connectedDb->execute()) {
+            foreach ($this as $property => $value) {
+                unset($this->$property);
+            }
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
      * Collect information about a given table and return it in a useful object format.
      *
      * @param $tablename
-     *
      * @return stdClass
-     * @throws frameworkError
      */
-    private static function getTableInfo($tablename){
+    protected static function getTableInfo($tablename) {
         $db = new Database();
         $columns = $db->getColumns($tablename);
 
@@ -404,5 +398,4 @@ class tableDataObject{
 
         return $output;
     }
-
 }

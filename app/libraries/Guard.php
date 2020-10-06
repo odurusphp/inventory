@@ -7,16 +7,9 @@
  */
 
 class Guard {
-    /**
-     * Guard constructor.
-     *
-     * @param $loggedinuser
-     * @param $roles
-     */
-    public function __construct($loggedinuser,$roles) {
-		if($loggedinuser === null || !$loggedinuser->hasRole($roles)){
-    //	Core::unauthorized('Access denied (incorrect role)');
-          Redirecting::location('front/pages/login');
-		}
-	}
+    public function __construct() {
+        if(!isset($_SESSION['userid'])){
+            header('Location:'. URLROOT);
+        }
+    }
 }

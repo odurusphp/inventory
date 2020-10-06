@@ -47,7 +47,7 @@ spl_autoload_register(function($class){
  * in class member functions as "global $lehrerdb"
  */
 
-$fdadb = new Database();
+$connectedDb = new Database();
 //$client = new Google_Client();
 
 // provide a catch all exception handler...

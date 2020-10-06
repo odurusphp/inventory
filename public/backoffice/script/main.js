@@ -17,6 +17,9 @@ $(document).ready(function() {
 
     $('.apptables').DataTable();
 
+    $('.userroles').SumoSelect();
+
+    $('.packarea').hide();
 
     function AjaxPostRequest(ajaxurl, postdata){
 
@@ -102,7 +105,29 @@ $(document).ready(function() {
         if(confirm('Do you want to delete customer ?')) {
             AjaxPostRedirection(ajaxurl, postdata, redirectionurl)
         }
+    })
 
+
+    $(document).on('click', '.deleteuserrole', function(){
+        var role = $(this).attr('role');
+        var userid = $(this).attr('userid');
+        var ajaxurl =  urlroot + '/ajax/deleteuserrole';
+        var redirectionurl =  urlroot + '/pages/edituser/'+userid;
+        var postdata = {role:role, userid:userid}
+        if(confirm('Do you want to delete role  ?')){
+            AjaxPostRedirection(ajaxurl, postdata, redirectionurl);
+        }
+
+    })
+
+    $(document).on('click', '.deleteuser', function(){
+        var userid = $(this).attr('userid');
+        var ajaxurl =  urlroot + '/ajax/deleteuser';
+        var redirectionurl =  urlroot + '/pages/users/';
+        var postdata = {userid:userid}
+        if(confirm('Do you want to delete user?')){
+            AjaxPostRedirection(ajaxurl, postdata, redirectionurl);
+        }
 
     })
 
@@ -121,18 +146,119 @@ $(document).ready(function() {
 
     })
 
-    $(document).on('click', '.accountview', function(){
+    $(document).on('click', '.viewtransactions', function(){
 
         $('#viewmodal').modal('show');
-        var accountnumber =  $(this).attr('account');
-        var accounttype =  $(this).attr('accounttype');
-        var postdata = {accountnumber : accountnumber, accounttype:accounttype};
-
-        ajaxurl =  urlroot + '/ajax/viewaccounts';
+        var code =  $(this).attr('code');
+        var postdata = {code:code};
+        ajaxurl =  urlroot + '/ajax/viewtransactions';
         AjaxPostRequest(ajaxurl, postdata)
-
-
     })
+
+
+    $('#searchproductname').autocomplete({
+        source: function(request, response) {
+            $.ajax({
+                url: urlroot + "/invoicing/searchproduct",
+                type: 'GET',
+                dataType: "json",
+                data: {
+                    term: request.term,
+                    request: 'search'
+                },
+                success: function(data) {
+                    console.log(data);
+                    response($.map(data, function(item) {
+                        return {
+                            label: item.productname,
+                            value: item.productid
+                        }
+                    }));
+                }
+            });
+        },
+        select: function(event, ui) {
+            $(this).val(ui.item.label); // display the selected text
+            var productid = ui.item.value; // selected value
+            console.log(productid);
+            $('#productid').val(productid)
+            return false;
+        },
+        minLength: 2
+    });
+
+    $(document).on('click', '.deletecart', function(){
+        var cartid =  $(this).attr('cartid');
+        var postdata = {cartid: cartid};
+        var ajaxurl =  urlroot + '/ajax/deletecart';
+        var redirectionurl =  urlroot + '/invoicing/create';
+        AjaxPostRedirection(ajaxurl, postdata, redirectionurl)
+    })
+
+    $(document).on('click', '.deletecategory', function(){
+        var catid =  $(this).attr('catid');
+        var postdata = {catid: catid};
+        var ajaxurl =  urlroot + '/ajax/deletecategory';
+        var redirectionurl =  urlroot + '/pages/categories';
+        if(confirm('Do you want to delete category ?')) {
+            AjaxPostRedirection(ajaxurl, postdata, redirectionurl)
+        }
+    })
+
+    $(document).on('click', '.deletevproduct', function(){
+        var productid =  $(this).attr('productid');
+        var postdata = { productid : productid};
+        var ajaxurl =  urlroot + '/ajax/deleteproduct';
+        var redirectionurl =  urlroot + '/pages/products';
+        if(confirm('Do you want to delete product ?')) {
+            AjaxPostRedirection(ajaxurl, postdata, redirectionurl)
+        }
+    })
+
+    $(document).on('change', '#discountval', function(){
+        var discount = $(this).val();
+        var postdata = {discount:discount};
+        var ajaxurl =  urlroot + '/ajax/discountcalculator';
+        $.ajax({
+            type: "POST",
+            url: ajaxurl,
+            data : postdata,
+            dataType: 'json',
+            beforeSend: function () {
+                $.blockUI();
+            },
+            success: function (text) {
+                console.log(text)
+                $('#discountamount').val(text.discountamount);
+                $('#afterdiscount').val(text.afterdiscount);
+            },
+            complete: function () {
+                $.unblockUI();
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                alert(xhr.status + " " + thrownError);
+            }
+        });
+    })
+
+    $(document).on('focusout', '#amountpaid', function(){
+        var amountpaid = $(this).val();
+        var afterdiscount = $('#afterdiscount').val();
+        var balance = amountpaid - afterdiscount;
+        $('#balance').val(balance);
+    })
+
+    $(document).on('change', '#categoryid', function(){
+        var category = $('option:selected', this).attr('catname');
+        if(category == 'Accessories'){
+            $('#packquantity').val();
+        }else if(category == 'Profiles') {
+            $('#packquantity').val(6);
+        }else if(category == 'Glass') {
+            $('#packquantity').val(2);
+        }
+    })
+
 
 
 })

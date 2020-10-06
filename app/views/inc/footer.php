@@ -35,10 +35,11 @@
 <script src="<?php echo URLROOT ?>/backoffice/js/jquery.serializejson.js"></script>
 <script src="<?php echo URLROOT ?>/backoffice/js/jquery.validate.min.js"></script>
 <script src="<?php echo URLROOT ?>/backoffice/uploadify/jquery.uploadifive.min.js"></script>
-<script src="<?php echo URLROOT ?>/backoffice/js/summernote/summernote.min.js"></script>
+ <script src="<?php echo URLROOT ?>/backoffice/js/jquery.sumoselect.js"></script>
 <script type="text/javascript" src="<?php echo URLROOT ?>/backoffice/css/dataTables/js/jquery.dataTables.js"></script>
 <script type="text/javascript" src="<?php echo URLROOT ?>/backoffice/css/dataTables/js/dataTables.rowReorder.min.js"></script>
 <script type="text/javascript" src="<?php echo URLROOT ?>/backoffice/css/dataTables/js/dataTables.responsive.min.js "></script>
 <script type="text/javascript" src="<?php echo URLROOT ?>/backoffice/js/raphael.min.js"></script>
 <script type="text/javascript" src="<?php echo URLROOT ?>/backoffice/js/morris.js"></script>
 <script type="text/javascript" src="<?php echo URLROOT ?>/backoffice/js/main.js"></script>
+ <script type="text/javascript" src="<?php echo URLROOT ?>/backoffice/js/fSelect.js'></script>

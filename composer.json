@@ -8,7 +8,8 @@
         "components/jquery": "2.1.4",
         "twitter/bootstrap": "3.3.5",
         "datatables/datatables": "1.10.16",
-        "phpoffice/phpexcel": "1.8.1"
+        "phpoffice/phpexcel": "1.8.1",
+        "mike42/escpos-php": "^3.0"
     }
 
 
