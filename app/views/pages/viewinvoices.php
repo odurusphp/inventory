@@ -12,8 +12,10 @@
     <tbody>
     <?php
     $total =  0;
+    $totalamt = 0;
     foreach ($data['invoicedata'] as $key=>$get):
         $total  = $total + $get->amount;
+        $totalamt = ($get->amount * $get->quantity) + $totalamt;
         $pro =  new Product($get->productid);
 
         ?>
@@ -27,7 +29,7 @@
     <?php  endforeach  ?>
 
     <tr>
-        <td scope="col" colspan="5" style="font-weight: bold"><?php  echo 'Total: GHC '.number_format($total,2)  ?></td>
+        <td scope="col" colspan="5" style="font-weight: bold"><?php  echo 'Total: GHC '.number_format($totalamt,2)  ?></td>
     </tr>
     </tbody>
 </table>
