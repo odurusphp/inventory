@@ -112,7 +112,7 @@
                                 <th scope="col">Limit</th>
                                 <th scope="col">Sale Price</th>
                                 <th scope="col"><i class="fa fa-pencil"></i></th>
-                                <th scope="col"><i class="fa fa-trash-o"></i></th>
+<!--                                <th scope="col"><i class="fa fa-trash-o"></i></th>-->
                             </tr>
                             </thead>
                             <tbody>
@@ -126,7 +126,7 @@
                                     <td><?php  echo $get->saleprice ?></td>
 
                                     <td><a href="<?php echo URLROOT.'/pages/editproduct/'.$get->productid  ?>"><i class="fa fa-pencil"></i></a></td>
-                                    <td><a href="#" class="deletevproduct" productid="<?php  echo $get->productid   ?>"><i class="fa fa-trash-o"></i></a></td>
+<!--                                    <td><a href="#" class="deletevproduct" productid="--><?php // echo $get->productid   ?><!--"><i class="fa fa-trash-o"></i></a></td>-->
                                 </tr>
                             <?php  endforeach  ?>
                             </tbody>
