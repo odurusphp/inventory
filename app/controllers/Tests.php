@@ -825,7 +825,7 @@ class Tests extends Controller {
 
     public function tprint(){
         //$url = URLROOT.'/tests/printer';
-        $url = 'http://inventory.local/tests/printer';
+        echo $url = 'http://inventory.local/tests/printer';
         $tes = file_get_contents($url);
         var_dump($tes);
     }
