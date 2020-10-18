@@ -34,4 +34,13 @@ class Refund extends  tableDataObject
         $connectedDb->prepare($query);
         return $connectedDb->fetchColumn();
     }
+
+    public static function getTotalByInvoiceRefundToday(){
+        $today = date('Y-m-d');
+        global $connectedDb;
+        $query = "select sum(totalamount) as total from refund where refunddate = '$today'
+                  and invoicedate <> '$today' ";
+        $connectedDb->prepare($query);
+        return $connectedDb->fetchColumn();
+    }
 }

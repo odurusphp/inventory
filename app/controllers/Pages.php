@@ -11,14 +11,19 @@ class Pages extends Controller{
         $outofstock = Product::getoutofstockcount();
         $totalpayments = Payments::getTotalPayments();
         $totalpaymentstoday = Payments::getTotalPaymentstoday();
-        $totalrefundtoday = Refund::getTotalRefundToday();
+
+        $totalrefundtoday = Refund::getTotalByInvoiceRefundToday();
         $totaltoday = $totalpaymentstoday - $totalrefundtoday;
 
         $outofstockdata = Product::listoutofstockcount();
         $paymentstoday = Payments::listAllPaymentstoday();
+        //$refundtoday  = Payments::listAllPaymentstoday();
+
+        $paymentstodaytotal  = $totalpaymentstoday -  $totalrefundtoday;
+
 
         $data = ['products'=>$allproducts,  'productcount'=>$productcount, 'outofstock'=>$outofstock,
-                 'totalpayments'=>$totalpayments, 'totalpaymentstoday'=>$totalpaymentstoday,
+                 'totalpayments'=>$totalpayments, 'totalpaymentstoday'=>$paymentstodaytotal,
                  'outofstockdata'=>$outofstockdata, 'paymentstoday'=>$paymentstoday
                  ];
 

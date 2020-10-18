@@ -52,18 +52,23 @@
 
                             <tr>
                                 <?php foreach ($data['invoiceitems'] as $get){
-                                $pro =  new Product($get->productid);
+                                $productcount = Product::getProductCountById($get->productid);
+                                if($productcount > 0){
+                                $pro = new Product($get->productid);
                                 ?>
                             <tr>
-                                <td><input type="hidden" name="invoiceid[]" value="<?php  echo $get->invoiceid  ?>" /></td>
-                                <td><?php  echo $pro->recordObject->productname  ?></td>
-                                <td><?php  echo $get->type  ?></td>
-                                <td><?php  echo $get->amount  ?></td>
-                                <td><?php  echo $get->quantity  ?></td>
-                                <td><input type="text" name="refundqty[]"  /></td>
+                                <td><input type="hidden" name="invoiceid[]" value="<?php echo $get->invoiceid ?>"/></td>
+                                <td><?php echo $pro->recordObject->productname ?></td>
+                                <td><?php echo $get->type ?></td>
+                                <td><?php echo $get->amount ?></td>
+                                <td><?php echo $get->quantity ?></td>
+                                <td><input type="text" name="refundqty[]"/></td>
                             </tr>
                             <tr>
-                                <?php  };  ?>
+                                <?php
+                                   }
+                                };
+                                ?>
                             <tr>
                                 <td colspan="4"><button name="processrefund" type="submit" class="btn btn-danger pull-left btn-sm"><i class="fa fa-shopping-cart"></i>  Process Refund </button></td>
                             <tr>
@@ -95,21 +100,26 @@
                        <td>Date</td>
                    </tr>
                    </thead>
-                   <?php  foreach($data['refunddata'] as $get):
-                        $p = new Product($get->productid);
-                        $finalpaydata= Payments::getPaymentsbyCode($get->invoicecode);
-                        $pay = isset($finalpaydata->finalamount) ? $finalpaydata->finalamount : 0;
-                       ?>
-                   <tr>
-                       <td><?php  echo  $get->invoicecode  ?></td>
-                       <td><?php  echo  $p->recordObject->productname  ?></td>
-                       <td><?php  echo  $get->quantity  ?></td>
-                       <td><?php  echo  ($get->amount * $get->quantity)   ?></td>
-                       <td><?php  echo  $pay ?></td>
-                       <td><?php  echo  $get->refunddate  ?></td>
+                   <?php  foreach($data['refunddata'] as $get){
+                   $productcount = Product::getProductCountById($get->productid);
+                        if($productcount > 0) {
+                            $p = new Product($get->productid);
+                            $finalpaydata = Payments::getPaymentsbyCode($get->invoicecode);
+                            $pay = isset($finalpaydata->finalamount) ? $finalpaydata->finalamount : 0;
+                            ?>
+                            <tr>
+                                <td><?php echo $get->invoicecode ?></td>
+                                <td><?php echo $p->recordObject->productname ?></td>
+                                <td><?php echo $get->quantity ?></td>
+                                <td><?php echo($get->amount * $get->quantity) ?></td>
+                                <td><?php echo $pay ?></td>
+                                <td><?php echo $get->refunddate ?></td>
 
-                   </tr>
-                   <?php  endforeach;   ?>
+                            </tr>
+                            <?php
+                        }
+
+                        }  ?>
 
                </table>
             </div>

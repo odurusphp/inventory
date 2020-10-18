@@ -60,19 +60,24 @@
                                         <th>Qty Sold</th>
                                     </tr>
                                     </thead>
-                                    <?php foreach ($data['products'] as $get):
-                                        $pro = new Product($get->productid);
-                                        $invoicedate = date('Y-m-d');
-                                        $from  = $data['from'];
-                                        $to = $data['to'];
-                                        ?>
-                                        <tr>
-                                            <td><?php echo $pro->recordObject->productname ?></td>
-                                            <td><?php echo  Categories::getCategoryById($pro->recordObject->catid ); ?></td>
-                                            <td><?php echo $pro->recordObject->quantity  ?></td>
-                                            <td><?php  echo  Invoices::gettotalsoldbyRange($from,  $to , $get->productid) ?></td>
-                                        </tr>
-                                    <?php  endforeach;  ?>
+                                    <?php foreach ($data['products'] as $get) {
+                                        $productcount = Product::getProductCountById($get->productid);
+                                        if ($productcount > 0) {
+
+                                            $pro = new Product($get->productid);
+                                            $invoicedate = date('Y-m-d');
+                                            $from = $data['from'];
+                                            $to = $data['to'];
+                                            ?>
+                                            <tr>
+                                                <td><?php echo $pro->recordObject->productname ?></td>
+                                                <td><?php echo Categories::getCategoryById($pro->recordObject->catid); ?></td>
+                                                <td><?php echo $pro->recordObject->quantity ?></td>
+                                                <td><?php echo Invoices::gettotalsoldbyRange($from, $to, $get->productid) ?></td>
+                                            </tr>
+                                        <?php }
+                                    }
+                                    ?>
                                 </table>
                                 <?php  endif;  ?>
 
@@ -86,7 +91,10 @@
                                         <th>Qty Sold</th>
                                     </tr>
                                     </thead>
-                                    <?php foreach ($data['products'] as $get):
+                                    <?php foreach ($data['products'] as $get){
+                                          $productcount = Product::getProductCountById($get->productid);
+                                          if($productcount > 0){
+
                                         $pro = new Product($get->productid);
                                         $invoicedate = date('Y-m-d');
                                         $from  = $data['from'];
@@ -98,7 +106,9 @@
                                             <td><?php echo $pro->recordObject->quantity  ?></td>
                                             <td><?php  echo Invoices::gettotalsold($invoicedate, $get->productid) ?></td>
                                         </tr>
-                                    <?php  endforeach;  ?>
+                                    <?php }
+                                    }
+                                    ?>
                                 </table>
                                 <?php endif;  ?>
                             </div>

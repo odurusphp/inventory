@@ -79,7 +79,9 @@
                     </table>
 
                         <div align="center" style="font-size: 20px; font-weight: 700">
-                            <?php  echo "TOTAL SALES:  GHC ". number_format($total,2);  ?>
+                            <?php
+                            $totalamt = $total - Refund::getTotalByInvoiceRefundToday();
+                            echo "TOTAL SALES:  GHC ". number_format($totalamt,2);  ?>
                         </div>
                     <?php endif  ?>
 

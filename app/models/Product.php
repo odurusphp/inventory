@@ -162,6 +162,8 @@ class Product extends tableDataObject
         return $connectedDb->fetchColumn();
     }
 
+
+
     public static function getstocavailable($productid){
         global $connectedDb;
         $query = "SELECT * FROM company_products INNER JOIN products ON

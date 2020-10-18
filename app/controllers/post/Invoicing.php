@@ -40,14 +40,14 @@ class Invoicing extends PostController
                     $invoicecode = $in->recordObject->invoicecode;
                     $invqty = $in->recordObject->quantity;
                     $invoiceamount = $in->recordObject->amount;
+                    $invoicedate = $in->recordObject->invoicedate;
                     $type = $in->recordObject->type;
+
                     // Payment information
                     $paydata = Payments::getPaymentsbyCode($invoicecode);
                     $discount = $paydata->discountpercent == 0 ? 0 : $paydata->discountpercent / 100;
                     $finalpayment = $paydata->finalamount;
                     $newquantity = $invqty - $refundquantity;
-                    // $invoiceamount = $newquantity == 0 ? 0 :  $in->recordObject->amount;
-
 
                     //Checking if i item is a profile and calculating discount back
                     $pro = new Product($productid);
@@ -61,10 +61,6 @@ class Invoicing extends PostController
                         $totaldiscount = $discountamount + $totaldiscount;
                         $refundamount = $invoiceamount -  $discountamt;
                     }else{
-//                        $discountamt = 0;
-//                        $discountamount = 0;
-//                        $refundamount = 0;
-
                         $discountamt = 0;
                         $discountamount = $discountamt * $refundquantity;
                         $totaldiscount = $discountamount + $totaldiscount;
@@ -73,6 +69,7 @@ class Invoicing extends PostController
 
                     $newamount = $invoiceamount + ($discount * $invoiceamount);
                     $total = $total + ($newamount * $refundquantity);
+
                     //Update new quantity
                     $in->recordObject->quantity = $newquantity;
                     $in->recordObject->refund = 1;
@@ -82,7 +79,7 @@ class Invoicing extends PostController
                     $refundquantity = $refundquantity == '' ? 0 : $refundquantity;
 
                     $this->storeRefund($invid, $refundamount, $productid, $refundquantity,
-                        $discountamt, $invoicecode, $finalpayment);
+                        $discountamt, $invoicecode, $finalpayment, $invoicedate);
                     //product changes
                     $this->refundproductchanges($productid, $refundquantity, $type);
                 }
@@ -92,7 +89,6 @@ class Invoicing extends PostController
 
             //Update payments;
             $this->paymentrefund($invoicecode, $totalrefund);
-            //$this->paymentchanges($invoicecode, $total, $totaldiscount);
 
             //History  and refund Data
             $refunddata = Refund::listAll();
@@ -122,7 +118,6 @@ class Invoicing extends PostController
 
     private function discountcalculation($category, $discount, $invoiceamount, $refundquantity, $quantity){
         if($category == 'Profiles'){
-
             $existingdiscount = $discount * $invoiceamount * $quantity;
             $discountamt = $discount * $invoiceamount * $refundquantity;
             $actualrefundamount = $invoiceamount * $refundquantity;
@@ -135,13 +130,9 @@ class Invoicing extends PostController
             $finalamount =  $quantityleft * $invoiceamount - ($discount * ($quantityleft * $invoiceamount) );
             $discountleft = $existingdiscount - $discountamt;
 
-
             $data = ['totalwithoutdiscount'=>$totalwithdiscount, 'backpay'=> $backpay,  'finaldiscount'=>$discountleft, 'finalamount'=>$finalamount ];
             print_r($data);
             exit;
-
-
-
 
         }
     }
@@ -159,7 +150,8 @@ class Invoicing extends PostController
         return $total;
     }
 
-    private function storeRefund($invoiceid, $amount, $productid, $quantity, $discount, $invoicecode, $paid){
+    private function storeRefund($invoiceid, $amount, $productid, $quantity, $discount,
+                                 $invoicecode, $paid, $invoicedate){
 
         $rf = new Refund();
         $rf->recordObject->invoiceid = $invoiceid;
@@ -170,9 +162,8 @@ class Invoicing extends PostController
         $rf->recordObject->refunddate = date('Y-m-d');
         $rf->recordObject->invoicecode = $invoicecode;
         $rf->recordObject->totalamount = $amount * $quantity;
+        $rf->recordObject->invoicedate = $invoicedate;
         $rf->recordObject->status = 1;
-
-
         $rf->recordObject->paid = $paid;
         $rf->store();
     }
