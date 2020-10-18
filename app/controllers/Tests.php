@@ -6,6 +6,11 @@
  * Time: 3:03 PM
  */
 
+
+use Mike42\Escpos\Printer;
+use Mike42\Escpos\EscposImage;
+use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
+
 class Tests extends Controller {
 
     /* public function __construct(){
@@ -792,6 +797,37 @@ class Tests extends Controller {
     public function zZtestO365(){
         OfficeProcessor::o365XML('2018-02','All','Office 356 DE');
         die("check for xml files");
+    }
+
+    public function printer(){
+        try {
+            // Enter the share name for your USB printer here
+            $connector = new WindowsPrintConnector("PrinceUSBPrinter");
+            $printer = new Printer($connector);
+            $image = EscposImage::load(PUBLIC_PATH.'/logo.png', false);
+            $printer -> bitImage($image);
+            $printer -> setTextSize(2,2);
+            $printer -> setEmphasis(true);
+            $printer->text("OFFICIAL RECEIPT\n");
+            $printer -> setTextSize(1,1);
+            $printer -> setEmphasis(true);
+            $printer->text("Cashier: " .strtoupper('Testing Prince'). "\n");
+            $printer -> text("\n");
+
+
+            $printer -> cut();
+            /* Close printer */
+            $printer -> close();
+        } catch(Exception $e) {
+            echo "Couldn't print to this printer: " . $e -> getMessage() . "\n";
+        }
+    }
+
+    public function tprint(){
+        //$url = URLROOT.'/tests/printer';
+        $url = 'http://inventory.local/tests/printer';
+        $tes = file_get_contents($url);
+        var_dump($tes);
     }
 
 }
