@@ -9,6 +9,8 @@ $(document).ready(function() {
         dateFormat: 'yy-mm-dd'
       });
 
+    $('.prod').SumoSelect({search: true, searchText: 'Select Product  ...'});
+
     $("#from, #to").datepicker({inline: true,
         changeMonth: true, changeYear: true, yearRange: "1920:2020",
         dateFormat: 'yy-mm-dd', autoclose: true,

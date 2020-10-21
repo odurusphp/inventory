@@ -1,9 +1,14 @@
 <?php  require ("includes/customernav.php"); ?>
 <?php  require ("includes/header.php"); ?>
 <style>
-    tr, td{
+    tr, td {
         padding: 2px;
     }
+    .optWrapper{
+        width: 600px !important;
+        height: 200px  !important;
+    }
+
  </style>
 
 <div class="clearfix"></div>
@@ -29,7 +34,7 @@
                     <table>
                         <tr>
                             <td width="80%">
-                                <select class="form-control" name="productid" id="productid" required>
+                                <select class="form-control prod" name="productid" id="productid" required style="width: 600px">
                                     <option>Select Product</option>
                                     <?php foreach($data['products'] as $get):   ?>
                                         <option value="<?php  echo $get->productid  ?>"><?php  echo $get->productname  ?></option>

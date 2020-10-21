@@ -122,6 +122,7 @@ class Pages extends PostController {
             $ph = new Producthistory();
             $ph->recordObject->productid = $productid;
             $ph->recordObject->quantity = $rsquantity;
+            $ph->recordObject->description = 'Added Stock';
             $ph->recordObject->historydate = date('Y-m-d');
             $ph->recordObject->userid = $_SESSION['userid'];
             if ($ph->store()) {
@@ -130,6 +131,41 @@ class Pages extends PostController {
                 $oldqty = $pdata->quantity;
                 $oldpieces = $pdata->pieces;
                 $newquantity = $rsquantity + $oldqty;
+                $originalquantity =   $newquantity  * $oldpieces;
+
+                //Update Product new quantity
+                $pro->recordObject->quantity = $newquantity;
+                $pro->recordObject->originalquantity = $originalquantity;
+
+                if ($pro->store()) {
+                    $catdata = Categories::listAll();
+                    $historydata = Producthistory::getHistoryById($productid);
+                    $productdata = $pro->recordObject;
+                    $data = ['productdata' => $productdata, 'catdata' => $catdata, 'historydata' => $historydata];
+                    $this->view('pages/editproduct', $data);
+                    exit;
+                }
+            }
+        }
+
+        if(isset($_POST['deletestock'])){
+
+            new RoleGuard('Remove Product');
+
+            $productid = $_POST['productid'];
+            $rsquantity = $_POST['rsquantity'];
+            $ph = new Producthistory();
+            $ph->recordObject->productid = $productid;
+            $ph->recordObject->quantity = $rsquantity;
+            $ph->recordObject->description = 'Removed Stock';
+            $ph->recordObject->historydate = date('Y-m-d');
+            $ph->recordObject->userid = $_SESSION['userid'];
+            if ($ph->store()) {
+                $pro = new Product($productid);
+                $pdata = $pro->recordObject;
+                $oldqty = $pdata->quantity;
+                $oldpieces = $pdata->pieces;
+                $newquantity =  $oldqty - $rsquantity;
                 $originalquantity =   $newquantity  * $oldpieces;
 
                 //Update Product new quantity

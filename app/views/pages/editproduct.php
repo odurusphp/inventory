@@ -125,6 +125,7 @@
                                     <input name='productid' class="form-control" type="hidden" value="<?php  echo $data['productdata']->productid  ?>" />
                                 </td>
                                 <td><input name="restock" type="submit" class="btn btn-primary" value="re-stock"></td>
+                                <td><input name="deletestock" type="submit" class="btn btn-danger" value="Remove stock"></td>
                             </tr>
                         </table>
                         </form>
@@ -135,11 +136,13 @@
                         <table class="table table-bordered table-striped">
                             <tr>
                                 <td>Quantity</td>
+                                <td>Description</td>
                                 <td>Date Changed</td>
                             </tr>
                             <?php foreach($data['historydata'] as $get):  ?>
                             <tr>
                                 <td><?php echo $get->quantity    ?></td>
+                                <td><?php echo $get->description   ?></td>
                                 <td><?php echo $get->historydate;    ?></td>
                             </tr>
                             <?php  endforeach;  ?>

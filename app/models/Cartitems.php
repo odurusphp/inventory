@@ -17,4 +17,11 @@ class Cartitems extends tableDataObject
         $connectedDb->prepare($query);
         return $connectedDb->resultSet();
     }
+
+    public static function deleteCartByCode($code){
+        global $connectedDb;
+        $query = "Delete from cartitems where  cartcode = '$code'  ";
+        $connectedDb->prepare($query);
+        $connectedDb->execute();
+    }
 }

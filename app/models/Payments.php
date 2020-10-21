@@ -8,7 +8,8 @@ class Payments extends tableDataObject
 
     public static function getTotalPayments(){
         global $connectedDb;
-        $query = "select sum(finalamount) as total from payments ";
+        $month = date('Y-m');
+        $query = "select sum(finalamount) as total from payments where paydate like '%$month%'";
         $connectedDb->prepare($query);
         return $connectedDb->fetchColumn();
     }

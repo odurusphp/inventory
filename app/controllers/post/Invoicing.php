@@ -305,34 +305,52 @@ class Invoicing extends PostController
             $type = $_POST['type'];
             $numberofpieces = $_POST['numberofpieces'];
             $pieceprice = $_POST['pieceprice'];
-
+            $products = Product::listAll();
+            $data = ['products' => $products];
             foreach($quantity as $key=>$qty){
                 $id =  $productid[$key];
                 $amount = $saleprice[$key];
                 $ptype = $type[$key];
                 $priceperpiece = $pieceprice[$key];
                 $numpieces = $numberofpieces[$key];
+                $sysquantity = $quantity[$key];
+
                 $amounttopay = 0;
+
+                $pn = new Product($id);
+                $dbquantity = $pn->recordObject->quantity;
+                if($sysquantity > $dbquantity){
+                    echo "<script>alert('Stock Available Not Enough')</script>";
+                    Cartitems::deleteCartByCode($_SESSION['invoicecode']);
+                    $this->view('pages/createinvoice', $data);
+                    exit;
+                }
+
+
                 if($ptype == 'Full'){
                     $amounttopay = $amount;
                 }elseif($ptype == 'Pieces'){
                     $amounttopay =  $priceperpiece;
                 }
-                $inv = new Invoices();
-                $inv->recordObject->productid = $id;
-                $inv->recordObject->quantity = $qty;
-                $inv->recordObject->type = $ptype;
-                $inv->recordObject->amount = $amounttopay;
-                $inv->recordObject->invoicedate = date('Y-m-d');
-                $inv->recordObject->invoicecode = $_SESSION['invoicecode'];
-                $inv->recordObject->userid = $_SESSION['userid'];
-                $inv->store();
+                if($_SESSION['invoicecode'] !== '') {
+                    $inv = new Invoices();
+                    $inv->recordObject->productid = $id;
+                    $inv->recordObject->quantity = $qty;
+                    $inv->recordObject->type = $ptype;
+                    $inv->recordObject->amount = $amounttopay;
+                    $inv->recordObject->invoicedate = date('Y-m-d');
+                    $inv->recordObject->invoicecode = $_SESSION['invoicecode'];
+                    $inv->recordObject->userid = $_SESSION['userid'];
+                    $inv->store();
+                }else{
+                    echo "<script>alert('Error processing invoice. Please try again')</script>";
+                    exit;
+                }
             }
             $invociedata = Invoices::getInvoiceBYCode($_SESSION['invoicecode']);
             $products = Product::listAll();
             $data = ['invoicedata'=>$invociedata, 'products'=>$products];
             $this->view('pages/createinvoice', $data);
-
         }
 
         if(isset($_POST['processinvoice'])){
@@ -348,32 +366,37 @@ class Invoicing extends PostController
             $finalamount = $total - $discountpercent;
             $discountamount = $_POST['discountamount'];
 
-            foreach($quantity as $key=>$qty) {
-                $id = $productid[$key];
-                $ptype = trim($optiontype[$key]);
+            if($_SESSION['invoicecode'] !== '') {
+                foreach ($quantity as $key => $qty) {
+                    $id = $productid[$key];
+                    $ptype = trim($optiontype[$key]);
 
-                $pro = new Product($id);
-                $oldquantity = $pro->recordObject->quantity;
-                $pieces  = $pro->recordObject->pieces;
-                $oldoriginalqty = $pro->recordObject->originalquantity;
+                    $pro = new Product($id);
+                    $oldquantity = $pro->recordObject->quantity;
+                    $pieces = $pro->recordObject->pieces;
+                    $oldoriginalqty = $pro->recordObject->originalquantity;
 
-                //Product updates
-                $prodata[] = ['quantity'=>$oldquantity,  'productid' => $id, 'type'=>$ptype,
-                    'originalquantity'=>$oldoriginalqty, 'newquantity'=>$qty, 'pieces'=>$pieces];
-                $this->newquantity($ptype, $oldquantity, $qty, $pieces, $id);
-                $this->neworiginalquantity($ptype, $oldoriginalqty, $qty, $pieces, $id);
+                    //Product updates
+                    $prodata[] = ['quantity' => $oldquantity, 'productid' => $id, 'type' => $ptype,
+                        'originalquantity' => $oldoriginalqty, 'newquantity' => $qty, 'pieces' => $pieces];
+                    $this->newquantity($ptype, $oldquantity, $qty, $pieces, $id);
+                    $this->neworiginalquantity($ptype, $oldoriginalqty, $qty, $pieces, $id);
 
+                }
+
+                //Inserting Payments;
+                $this->payments($total, $finalamount, $discountamount, $discount);
+
+                // Print Receipt
+                $this->printReceipt($discountamount, $finalamount, $balance, $amountpaid);
+
+                unset($_SESSION['invoicecode']);
+
+                header('Location:' . URLROOT . '/invoicing/create');
+            }else{
+                echo "<script>alert('Error processing invoice. Please try again')</script>";
+                exit;
             }
-
-            //Inserting Payments;
-            $this->payments($total, $finalamount,  $discountamount, $discount);
-
-            // Print Receipt
-            $this->printReceipt($discountamount,  $finalamount, $balance,$amountpaid);
-
-            unset($_SESSION['invoicecode']);
-
-            header('Location:'.URLROOT.'/invoicing/create');
             // exit;
         }
 
