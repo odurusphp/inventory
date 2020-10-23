@@ -813,6 +813,10 @@ class Tests extends Controller {
             $printer -> setEmphasis(true);
             $printer->text("Cashier: " .strtoupper('Testing Prince'). "\n");
             $printer -> text("\n");
+            $printer->text("Cashier: " .strtoupper('Testing Prince'). "\n");
+            $printer -> text("\n");
+            $printer->text("Cashier: " .strtoupper('Testing Prince'). "\n");
+            $printer -> text("\n");
 
 
             $printer -> cut();
@@ -825,7 +829,7 @@ class Tests extends Controller {
 
     public function tprint(){
         //$url = URLROOT.'/tests/printer';
-        echo $url = 'http://192.168.8.101/testprinter/test.php';
+        echo $url = 'http://25cbe74cdf6f.ngrok.io/testprinter/test.php';
         $tes = file_get_contents($url);
         var_dump($tes);
     }
