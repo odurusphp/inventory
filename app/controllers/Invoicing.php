@@ -44,4 +44,28 @@ class Invoicing extends Controller
         echo json_encode($productdata);
     }
 
+
+    public function test($discountpercent=10, $userid=21, $invoicecode='5f2ed629c43e9',  $balance = null, $amountpaid = null)
+    {
+        $curl = curl_init();
+        $user = new User($userid);
+        $name = $user->recordObject->firstname;
+
+        $invoicedata = Invoices::getInvoiceBYCode($invoicecode);
+        $gettotalpayments = Payments::getPaymentsbyCode($invoicecode);
+        $finalamount = $gettotalpayments->finalamount;
+        $totalamtonivoice = $gettotalpayments->amount;
+        $totalamt = $discountpercent + $finalamount;
+
+        $data = json_encode(['invoicedata' => $invoicedata, 'discountpercent' => $discountpercent,
+            'finalamount' => $finalamount, 'name' => $name, 'invoicecode' => $invoicecode,
+            'totalamt' => $totalamt,  'balance'=>$balance, 'amountpaid'=>$amountpaid]);
+
+        echo '<pre>';
+        print_r($data);
+
+    }
+
+
+
 }

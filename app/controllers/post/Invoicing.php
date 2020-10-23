@@ -388,7 +388,8 @@ class Invoicing extends PostController
                 $this->payments($total, $finalamount, $discountamount, $discount);
 
                 // Print Receipt
-                $this->printReceipt($discountamount, $finalamount, $balance, $amountpaid);
+                //$this->printReceipt($discountamount, $finalamount, $balance, $amountpaid);
+                $this->onlineprint($discountpercent, $_SESSION['userid'], $_SESSION['invoicecode'],  $balance, $amountpaid);
 
                 unset($_SESSION['invoicecode']);
 
@@ -422,6 +423,44 @@ class Invoicing extends PostController
         $pa->recordObject->discountpercent = $discountpercent;
         $pa->recordObject->userid = $_SESSION['userid'];
         $pa->store();
+    }
+
+
+    public function onlineprint($discountpercent, $userid, $invoicecode,  $balance = null, $amountpaid = null){
+        $curl = curl_init();
+        $user = new User($userid);
+        $name = $user->recordObject->firstname;
+
+        $invoicedata = Invoices::getInvoiceBYCode($invoicecode);
+        $gettotalpayments =  Payments::getPaymentsbyCode($invoicecode);
+        $finalamount = $gettotalpayments->finalamount;
+        $totalamtonivoice = $gettotalpayments->amount;
+        $totalamt = $discountpercent + $finalamount;
+
+        $data = json_encode(['invoicedata'=>$invoicedata, 'discountpercent'=>$discountpercent,
+                'finalamount'=>$finalamount, 'name'=>$name, 'invoicecode'=>$invoicecode,
+                 'totalamt'=>$totalamt, 'balance'=>$balance, 'amountpaid'=>$amountpaid]);
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => NGROK_URL.'/onlineprint',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "POST",
+            CURLOPT_POSTFIELDS =>$data,
+            CURLOPT_HTTPHEADER => array(
+                "Accept: application/json",
+                "Content-Type: application/json"
+            ),
+        ));
+
+        $response = curl_exec($curl);
+        curl_close($curl);
+        //echo $response;
+
     }
 
 
@@ -531,11 +570,12 @@ class Invoicing extends PostController
         }elseif($type === 'Pieces'){
             $neworiginalqty = $oldoriginalqty + $qty;
         }
-
         $p = new Product($productid);
         $p->recordObject->originalquantity = $neworiginalqty;
         $p->store();
     }
+
+
 
 
 
