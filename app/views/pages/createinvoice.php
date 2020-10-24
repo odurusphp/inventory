@@ -39,13 +39,11 @@
                         <tr>
                             <td width="80%">
                                 <select class="form-control prod" name="productid" id="productid" required style="width: 600px;">
-                                    <option>Select Product</option>
+                                    <option value="">Select Product</option>
                                     <?php foreach($data['products'] as $get):   ?>
                                         <option value="<?php  echo $get->productid  ?>"><?php  echo $get->productname  ?></option>
                                     <?php  endforeach;   ?>
                                 </select>
-<!--                                <input class="form-control" placeholder="Search Product" name="searchproductname" id="searchproductname"/>-->
-<!--                                <input  type = 'hidden' name="productid" id="productid"/>-->
                             </td>
                             <td><button type="submit" href='#' name="addcart" style="color:#fff" class="btn  btn-warning pull-left">
                                     <i class = 'fa fa-plus'></i> Add Product </button></td>

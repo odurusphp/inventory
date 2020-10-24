@@ -538,7 +538,7 @@ class Invoicing extends PostController
 
         try {
             // Enter the share name for your USB printer here
-            $connector = new WindowsPrintConnector("PrinceUSBPrinter");
+            $connector = new WindowsPrintConnector("POS-80-Series");
             $printer = new Printer($connector);
             $image = EscposImage::load(PUBLIC_PATH.'/logo.png', false);
             $printer -> bitImage($image);
