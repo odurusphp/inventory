@@ -80,6 +80,9 @@ class Invoicing extends PostController
 
                     $this->storeRefund($invid, $refundamount, $productid, $refundquantity,
                         $discountamt, $invoicecode, $finalpayment, $invoicedate);
+
+                    $newrefunddata[] = ['refunddate'=>$invoicedate, 'quantity'=>$refundquantity,
+                                     'productid'=>$productid, 'invoicecode'=>$invoicecode, 'amount'=>$refundamount];
                     //product changes
                     $this->refundproductchanges($productid, $refundquantity, $type);
                 }
@@ -100,7 +103,7 @@ class Invoicing extends PostController
             $message = 'Refund done successfully<br/>'. 'Total to refund: GHC '. $totalrefund;
 
             //print refund
-            $this->printRefund($invoicecode, $totalrefund);
+            $this->printRefund($newrefunddata, $totalrefund);
 
             $data = ['refunddata' => $refunddata, 'historydata'=>$historydata,
                 'message'=>$message ];
@@ -480,18 +483,17 @@ class Invoicing extends PostController
 
     }
 
-  public function printRefund($invoicecode,$totalrefund)
+  public function printRefund($refunddata,$totalrefund)
   {
       $curl = curl_init();
       $user = new User($_SESSION['userid']);
       $name = $user->recordObject->firstname;
       $rdata = [];
-      $refunddata = Refund::getRefundDetails($invoicecode);
       foreach($refunddata as $get){
-          $refunddate = $get->refunddate;
-          $productid = $get->productid;
-          $quantity = $get->quantity;
-          $amt = $get->totalamount;
+          $refunddate = $get['refunddate'];
+          $productid = $get['productid'];
+          $quantity = $get['quantity'];
+          $amt = $get['amount'];
           $pro = new Product($productid);
           $productname = $pro->recordObject->productname;
           $rdata[]  = ['refunddate'=>$refunddate, 'product'=>$productname,

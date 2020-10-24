@@ -6,7 +6,11 @@
     }
     .optWrapper{
         width: 600px !important;
-        height: 200px  !important;
+      
+    }
+
+    .SumoSelect>.optWrapper{
+        position: relative !important;
     }
 
  </style>
@@ -34,7 +38,7 @@
                     <table>
                         <tr>
                             <td width="80%">
-                                <select class="form-control prod" name="productid" id="productid" required style="width: 600px">
+                                <select class="form-control prod" name="productid" id="productid" required style="width: 600px;">
                                     <option>Select Product</option>
                                     <?php foreach($data['products'] as $get):   ?>
                                         <option value="<?php  echo $get->productid  ?>"><?php  echo $get->productname  ?></option>

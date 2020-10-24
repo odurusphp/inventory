@@ -93,7 +93,7 @@ class Onlineprint extends PostController
             $printer->bitImage($image);
             $printer->setTextSize(2, 2);
             $printer->setEmphasis(true);
-            $printer->text("OFFICIAL RECEIPT - REFUND\n");
+            $printer->text("REFUND RECEIPT \n");
             $printer->setTextSize(1, 1);
             $printer->setEmphasis(true);
             $printer->text("Cashier: " . strtoupper($name) . "\n");
@@ -106,7 +106,8 @@ class Onlineprint extends PostController
             foreach ($refunddata as $get) {
                 $printer->text("Product: " . $get->product . "\n");
                 $printer->text("Qty: " . $get->quantity . "\n");
-                $printer->text("Amount: " . $get->amount . "\n");
+                $printer->text("Unit Price: " . $get->amount . "\n");
+                $printer->text("Amount: " . $get->amount * $get->quantity . "\n");
                 $printer->text("\n");
             }
 
