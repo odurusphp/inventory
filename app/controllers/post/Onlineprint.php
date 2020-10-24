@@ -40,9 +40,8 @@ class Onlineprint extends PostController
             $printer -> text("Receipt Date:  ".date('Y-m-d')."\n");
             $printer -> text("\n");
             foreach($invoicedata as $get){
-                $pro = new Product($get->productid);
-                $name = $pro->recordObject->productname;
-                $printer -> text("Product: ".$name."\n");
+
+                $printer -> text("Product: ".$get->product."\n");
                 $printer -> text("Qty: ".$get->quantity." - ".$get->type. "\n");
                 $printer -> text("Unit Price: ".$get->amount."\n");
                 $printer -> text("Total Price: ".$get->amount * $get->quantity."\n");
@@ -73,6 +72,59 @@ class Onlineprint extends PostController
         }
 
 
+    }
+
+    public function refund()
+    {
+        $handler = fopen('php://input', 'r');
+        $data = stream_get_contents($handler);
+        $data = json_decode($data);
+
+        $refunddata = $data->refunddata;
+        $name = $data->name;
+        $invoicecode = $data->invoicecode;
+        $totalrefund = $data->totalrefund;
+
+        try {
+            // Enter the share name for your USB printer here
+            $connector = new WindowsPrintConnector("PrinceUSBPrinter");
+            $printer = new Printer($connector);
+            $image = EscposImage::load(PUBLIC_PATH . '/logo.png', false);
+            $printer->bitImage($image);
+            $printer->setTextSize(2, 2);
+            $printer->setEmphasis(true);
+            $printer->text("OFFICIAL RECEIPT - REFUND\n");
+            $printer->setTextSize(1, 1);
+            $printer->setEmphasis(true);
+            $printer->text("Cashier: " . strtoupper($name) . "\n");
+            $printer->text("\n");
+            $printer->setTextSize(1, 1);
+            $printer->setEmphasis(false);
+            $printer->text("Receipt No:  " . $invoicecode . "\n");
+            $printer->text("Receipt Date:  " . date('Y-m-d') . "\n");
+            $printer->text("\n");
+            foreach ($refunddata as $get) {
+                $printer->text("Product: " . $get->product . "\n");
+                $printer->text("Qty: " . $get->quantity . "\n");
+                $printer->text("Amount: " . $get->amount . "\n");
+                $printer->text("\n");
+            }
+
+            $printer->text("\n");
+            $printer->text("Total Refund: " . number_format($totalrefund, 2) . "\n");
+
+            $printer->setEmphasis(false);
+            $printer->text("\n");
+            $printer->text("\n");
+            $printer->text("Powered by NM Aluminium. Tel: 0302959686\n");
+            $printer->text("\n");
+            $printer->text("\n");
+            $printer->cut();
+            /* Close printer */
+            $printer->close();
+        } catch (Exception $e) {
+            echo "Couldn't print to this printer: " . $e->getMessage() . "\n";
+        }
     }
 
 

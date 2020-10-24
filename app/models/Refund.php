@@ -12,6 +12,14 @@ class Refund extends  tableDataObject
         return $connectedDb->resultSet();
     }
 
+    public static function getRefundDetailsToday($code){
+        global $connectedDb;
+        $today = date('Y-m-d');
+        $query = "select * from refund where  invoicecode = '$code' and refunddate = '$today' ";
+        $connectedDb->prepare($query);
+        return $connectedDb->resultSet();
+    }
+
     public static function getRundByCode($code){
         global $connectedDb;
         $query = "select  SUM(totalamount) AS total from refund where  invoicecode = '$code' and status = 1 ";

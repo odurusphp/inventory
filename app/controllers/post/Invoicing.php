@@ -99,6 +99,9 @@ class Invoicing extends PostController
 
             $message = 'Refund done successfully<br/>'. 'Total to refund: GHC '. $totalrefund;
 
+            //print refund
+            $this->printRefund($invoicecode, $totalrefund);
+
             $data = ['refunddata' => $refunddata, 'historydata'=>$historydata,
                 'message'=>$message ];
             $this->view('pages/refund', $data);
@@ -437,7 +440,21 @@ class Invoicing extends PostController
         $totalamtonivoice = $gettotalpayments->amount;
         $totalamt = $discountpercent + $finalamount;
 
-        $data = json_encode(['invoicedata'=>$invoicedata, 'discountpercent'=>$discountpercent,
+        $idata = [];
+        foreach ($invoicedata as $get){
+            $amount = $get->amount;
+            $quantity = $get->quantity;
+            $type = $get->type;
+            $productid = $get->productid;
+            $pro = new Product($productid);
+            $productname = $pro->recordObject->productname;
+            $idata[]  = ['amount'=>$amount, 'product'=>$productname,
+                          'quantity'=>$quantity, 'type'=>$type];
+
+
+        }
+
+        $data = json_encode(['invoicedata'=>$idata, 'discountpercent'=>$discountpercent,
                 'finalamount'=>$finalamount, 'name'=>$name, 'invoicecode'=>$invoicecode,
                  'totalamt'=>$totalamt, 'balance'=>$balance, 'amountpaid'=>$amountpaid]);
 
@@ -462,6 +479,49 @@ class Invoicing extends PostController
         //echo $response;
 
     }
+
+  public function printRefund($invoicecode,$totalrefund)
+  {
+      $curl = curl_init();
+      $user = new User($_SESSION['userid']);
+      $name = $user->recordObject->firstname;
+      $rdata = [];
+      $refunddata = Refund::getRefundDetails($invoicecode);
+      foreach($refunddata as $get){
+          $refunddate = $get->refunddate;
+          $productid = $get->productid;
+          $quantity = $get->quantity;
+          $amt = $get->totalamount;
+          $pro = new Product($productid);
+          $productname = $pro->recordObject->productname;
+          $rdata[]  = ['refunddate'=>$refunddate, 'product'=>$productname,
+                       'quantity'=>$quantity, 'amount'=>$amt];
+      }
+
+      $data = json_encode(['refunddata'=>$rdata, 'name'=>$name, 'invoicecode'=>$invoicecode,
+                            'totalrefund'=>$totalrefund]);
+
+      curl_setopt_array($curl, array(
+          CURLOPT_URL => NGROK_URL.'/onlineprint/refund',
+          CURLOPT_RETURNTRANSFER => true,
+          CURLOPT_ENCODING => "",
+          CURLOPT_MAXREDIRS => 10,
+          CURLOPT_TIMEOUT => 0,
+          CURLOPT_FOLLOWLOCATION => true,
+          CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+          CURLOPT_CUSTOMREQUEST => "POST",
+          CURLOPT_POSTFIELDS =>$data,
+          CURLOPT_HTTPHEADER => array(
+              "Accept: application/json",
+              "Content-Type: application/json"
+          ),
+      ));
+
+      $response = curl_exec($curl);
+      curl_close($curl);
+  }
+
+
 
 
     public function printReceipt($discountpercent, $total, $balance = null, $amountpaid = null){

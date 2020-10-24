@@ -65,6 +65,30 @@ class Invoicing extends Controller
         print_r($data);
 
     }
+    public function testrefund($invoicecode = '5f85a00f52986',$totalrefund='200')
+    {
+        $user = new User(21);
+        $name = $user->recordObject->firstname;
+        $rdata = [];
+        $refunddata = Refund::getRefundDetails($invoicecode);
+        foreach($refunddata as $get){
+            $refunddate = $get->refunddate;
+            $productid = $get->productid;
+            $quantity = $get->quantity;
+            $amt = $get->totalamount;
+            $pro = new Product($productid);
+            $productname = $pro->recordObject->productname;
+            $rdata[]  = ['refunddate'=>$refunddate, 'product'=>$productname,
+                'quantity'=>$quantity, 'amount'=>$amt];
+        }
+
+        $data = json_encode(['refunddata'=>$rdata, 'name'=>$name, 'invoicecode'=>$invoicecode,
+            'totalrefund'=>$totalrefund]);
+
+        echo '<pre>';
+        print_r($data);
+
+    }
 
 
 
