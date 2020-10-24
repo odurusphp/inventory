@@ -103,7 +103,7 @@ class Invoicing extends PostController
             $message = 'Refund done successfully<br/>'. 'Total to refund: GHC '. $totalrefund;
 
             //print refund
-            $this->printRefund($newrefunddata, $totalrefund);
+            $this->printRefund($newrefunddata, $totalrefund, $invoicecode);
 
             $data = ['refunddata' => $refunddata, 'historydata'=>$historydata,
                 'message'=>$message ];
@@ -462,7 +462,7 @@ class Invoicing extends PostController
                  'totalamt'=>$totalamt, 'balance'=>$balance, 'amountpaid'=>$amountpaid]);
 
         curl_setopt_array($curl, array(
-            CURLOPT_URL => NGROK_URL.'/onlineprint',
+            CURLOPT_URL => NGROK_URL.'/print/onlineprint.php',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => "",
             CURLOPT_MAXREDIRS => 10,
@@ -483,7 +483,7 @@ class Invoicing extends PostController
 
     }
 
-  public function printRefund($refunddata,$totalrefund)
+  public function printRefund($refunddata,$totalrefund, $invoicecode)
   {
       $curl = curl_init();
       $user = new User($_SESSION['userid']);
@@ -504,7 +504,7 @@ class Invoicing extends PostController
                             'totalrefund'=>$totalrefund]);
 
       curl_setopt_array($curl, array(
-          CURLOPT_URL => NGROK_URL.'/onlineprint/refund',
+          CURLOPT_URL => NGROK_URL.'/print/refundprint.php',
           CURLOPT_RETURNTRANSFER => true,
           CURLOPT_ENCODING => "",
           CURLOPT_MAXREDIRS => 10,

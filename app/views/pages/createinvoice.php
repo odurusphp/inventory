@@ -6,7 +6,7 @@
     }
     .optWrapper{
         width: 600px !important;
-      
+
     }
 
     .SumoSelect>.optWrapper{
