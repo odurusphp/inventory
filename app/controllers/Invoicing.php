@@ -156,7 +156,7 @@ class Invoicing extends Controller
         }
     }
 
-    public function onlinereprint(){
+    public function onlinereprint($invoicecode){
         $curl = curl_init();
         $invoicecode = $_GET['invoicecode'];
         $userid = $_SESSION['userid'];
