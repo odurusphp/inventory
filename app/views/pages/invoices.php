@@ -60,6 +60,7 @@
                             <td>Discount</td>
                             <td>Total Amount</td>
                             <td>View</td>
+                            <td>Re-print</td>
                         </tr>
                         </thead>
                         <?php
@@ -74,6 +75,7 @@
                             <td><?php echo number_format($get->discount,2)  ?></td>
                             <td><?php echo number_format($get->finalamount,2)  ?></td>
                              <td><a href="#" class="viewtransactions" code="<?php echo $get->invoicecode ?>">View</a></td>
+                             <td><a href="#"  class='reprint' code="<?php echo $get->invoicecode ?>" >Re-print</a></td>
                         </tr>
                         <?php endforeach  ?>
                     </table>

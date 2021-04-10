@@ -1,5 +1,10 @@
 <?php
 
+
+use Mike42\Escpos\Printer;
+use Mike42\Escpos\EscposImage;
+use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
+
 class Invoicing extends Controller
 {
    public function index(){
@@ -88,6 +93,67 @@ class Invoicing extends Controller
         echo '<pre>';
         print_r($data);
 
+    }
+
+    public function reprint($invoicecode){
+
+        $user = new User($_SESSION['userid']);
+        $name = $user->recordObject->firstname;
+
+        $invociedata = Invoices::getInvoiceBYCode($invoicecode);
+        $gettotalpayments =  Payments::getPaymentsbyCode($invoicecode);
+        $finalamount = $gettotalpayments->finalamount;
+        $totalamtonivoice = $gettotalpayments->amount;
+
+        try {
+            // Enter the share name for your USB printer here
+            $connector = new WindowsPrintConnector("XP-80C");
+            $printer = new Printer($connector);
+            $image = EscposImage::load(PUBLIC_PATH.'/logo.png', false);
+            $printer -> bitImage($image);
+            $printer -> setTextSize(2,2);
+            $printer -> setEmphasis(true);
+            $printer->text("OFFICIAL RECEIPT\n");
+            $printer -> setTextSize(1,1);
+            $printer -> setEmphasis(true);
+            $printer->text("Cashier: " .strtoupper($name). "\n");
+            $printer -> text("\n");
+            $printer -> setTextSize(1, 1);
+            $printer -> setEmphasis(false);
+            $printer -> text("Receipt No:  ".$_SESSION['invoicecode']."\n");
+            $printer -> text("Receipt Date:  ".date('Y-m-d')."\n");
+            $printer -> text("\n");
+            foreach($invociedata as $get){
+                $pro = new Product($get->productid);
+                $name = $pro->recordObject->productname;
+                $printer -> text("Product: ".$name."\n");
+                $printer -> text("Qty: ".$get->quantity." - ".$get->type. "\n");
+                $printer -> text("Unit Price: ".$get->amount."\n");
+                $printer -> text("Total Price: ".$get->amount * $get->quantity."\n");
+                $printer -> text("\n");
+            }
+            $discountpercent = $invociedata->discount;
+            $totalamt = $discountpercent + $finalamount;
+            $printer -> text("\n");
+            $printer -> text("Total Amount: ".number_format($totalamt , 2)."\n");
+            $printer -> text("Discount: ".number_format($discountpercent ,2)."\n");
+            $printer -> setTextSize(2,1);
+            $printer -> setEmphasis(true);
+            $printer -> text("Total Paid: ".$finalamount."\n");
+            $printer -> setTextSize(1,1);
+
+            $printer -> setEmphasis(false);
+            $printer -> text("\n");
+            $printer -> text("\n");
+            $printer -> text("Powered by NM Aluminium. Tel: 0302959686\n");
+            $printer -> text("\n");
+            $printer -> text("\n");
+            $printer -> cut();
+            /* Close printer */
+            $printer -> close();
+        } catch(Exception $e) {
+            echo "Couldn't print to this printer: " . $e -> getMessage() . "\n";
+        }
     }
 
 

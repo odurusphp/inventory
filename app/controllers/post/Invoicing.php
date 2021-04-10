@@ -483,6 +483,60 @@ class Invoicing extends PostController
 
     }
 
+    public function onlinereprint(){
+        $curl = curl_init();
+        $invoicecode = $_POST['invoicecode'];
+        $userid = $_SESSION['userid'];
+        $user = new User($userid);
+        $name = $user->recordObject->firstname;
+
+        $invoicedata = Invoices::getInvoiceBYCode($invoicecode);
+        $gettotalpayments =  Payments::getPaymentsbyCode($invoicecode);
+        $finalamount = $gettotalpayments->finalamount;
+        $totalamtonivoice = $gettotalpayments->amount;
+        $discountpercent = $invoicedata->discount;
+        $totalamt = $discountpercent + $finalamount;
+
+        $idata = [];
+        foreach ($invoicedata as $get){
+            $amount = $get->amount;
+            $quantity = $get->quantity;
+            $type = $get->type;
+            $productid = $get->productid;
+            $pro = new Product($productid);
+            $productname = $pro->recordObject->productname;
+            $idata[]  = ['amount'=>$amount, 'product'=>$productname,
+                'quantity'=>$quantity, 'type'=>$type];
+
+
+        }
+
+        $data = json_encode(['invoicedata'=>$idata, 'discountpercent'=>$discountpercent,
+            'finalamount'=>$finalamount, 'name'=>$name, 'invoicecode'=>$invoicecode,
+            'totalamt'=>$totalamt]);
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => NGROK_URL.'/print/reprint.php',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "POST",
+            CURLOPT_POSTFIELDS =>$data,
+            CURLOPT_HTTPHEADER => array(
+                "Accept: application/json",
+                "Content-Type: application/json"
+            ),
+        ));
+
+        $response = curl_exec($curl);
+        curl_close($curl);
+        //echo $response;
+
+    }
+
   public function printRefund($refunddata,$totalrefund, $invoicecode)
   {
       $curl = curl_init();
@@ -538,7 +592,7 @@ class Invoicing extends PostController
 
         try {
             // Enter the share name for your USB printer here
-            $connector = new WindowsPrintConnector("POS-80-Series");
+            $connector = new WindowsPrintConnector("XP-80C");
             $printer = new Printer($connector);
             $image = EscposImage::load(PUBLIC_PATH.'/logo.png', false);
             $printer -> bitImage($image);
@@ -635,6 +689,67 @@ class Invoicing extends PostController
         $p = new Product($productid);
         $p->recordObject->originalquantity = $neworiginalqty;
         $p->store();
+    }
+
+    public function reprint(){
+
+        $user = new User($_SESSION['userid']);
+        $name = $user->recordObject->firstname;
+        $invoicecode = $_POST['invoicecode'];
+        $invociedata = Invoices::getInvoiceBYCode($invoicecode);
+        $gettotalpayments =  Payments::getPaymentsbyCode($invoicecode);
+        $finalamount = $gettotalpayments->finalamount;
+        $totalamtonivoice = $gettotalpayments->amount;
+
+        try {
+            // Enter the share name for your USB printer here
+            $connector = new WindowsPrintConnector("XP-80C");
+            $printer = new Printer($connector);
+            $image = EscposImage::load(PUBLIC_PATH.'/logo.png', false);
+            $printer -> bitImage($image);
+            $printer -> setTextSize(2,2);
+            $printer -> setEmphasis(true);
+            $printer->text("OFFICIAL RECEIPT\n");
+            $printer -> setTextSize(1,1);
+            $printer -> setEmphasis(true);
+            $printer->text("Cashier: " .strtoupper($name). "\n");
+            $printer -> text("\n");
+            $printer -> setTextSize(1, 1);
+            $printer -> setEmphasis(false);
+            $printer -> text("Receipt No:  ".$_SESSION['invoicecode']."\n");
+            $printer -> text("Receipt Date:  ".date('Y-m-d')."\n");
+            $printer -> text("\n");
+            foreach($invociedata as $get){
+                $pro = new Product($get->productid);
+                $name = $pro->recordObject->productname;
+                $printer -> text("Product: ".$name."\n");
+                $printer -> text("Qty: ".$get->quantity." - ".$get->type. "\n");
+                $printer -> text("Unit Price: ".$get->amount."\n");
+                $printer -> text("Total Price: ".$get->amount * $get->quantity."\n");
+                $printer -> text("\n");
+            }
+            $discountpercent = $invociedata->discount;
+            $totalamt = $discountpercent + $finalamount;
+            $printer -> text("\n");
+            $printer -> text("Total Amount: ".number_format($totalamt , 2)."\n");
+            $printer -> text("Discount: ".number_format($discountpercent ,2)."\n");
+            $printer -> setTextSize(2,1);
+            $printer -> setEmphasis(true);
+            $printer -> text("Total Paid: ".$finalamount."\n");
+            $printer -> setTextSize(1,1);
+
+            $printer -> setEmphasis(false);
+            $printer -> text("\n");
+            $printer -> text("\n");
+            $printer -> text("Powered by NM Aluminium. Tel: 0302959686\n");
+            $printer -> text("\n");
+            $printer -> text("\n");
+            $printer -> cut();
+            /* Close printer */
+            $printer -> close();
+        } catch(Exception $e) {
+            echo "Couldn't print to this printer: " . $e -> getMessage() . "\n";
+        }
     }
 
 
