@@ -511,9 +511,12 @@ class Invoicing extends PostController
 
         }
 
-        $data = json_encode(['invoicedata'=>$idata, 'discountpercent'=>$discountpercent,
+        echo $data = json_encode(['invoicedata'=>$idata, 'discountpercent'=>$discountpercent,
             'finalamount'=>$finalamount, 'name'=>$name, 'invoicecode'=>$invoicecode,
             'totalamt'=>$totalamt]);
+
+        echo NGROK_URL.'/print/reprint.php';
+        exit;
 
         curl_setopt_array($curl, array(
             CURLOPT_URL => NGROK_URL.'/print/reprint.php',
