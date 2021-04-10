@@ -267,7 +267,7 @@ $(document).ready(function() {
         var ajaxurl =  urlroot + '/invoicing/onlinereprint';
 
         $.ajax({
-            type: "POST",
+            type: "GET",
             url: ajaxurl,
             data : postdata,
             beforeSend: function () {
