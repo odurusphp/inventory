@@ -493,7 +493,7 @@ class Invoicing extends PostController
         $invoicedata = Invoices::getInvoiceBYCode($invoicecode);
         $gettotalpayments =  Payments::getPaymentsbyCode($invoicecode);
         $finalamount = $gettotalpayments->finalamount;
-        $totalamtonivoice = $gettotalpayments->amount;
+        //$totalamtonivoice = $gettotalpayments->amount;
         $discountpercent = $invoicedata->discount;
         $totalamt = $discountpercent + $finalamount;
 
@@ -533,7 +533,7 @@ class Invoicing extends PostController
 
         $response = curl_exec($curl);
         curl_close($curl);
-        //echo $response;
+        echo $response;
 
     }
 

@@ -263,11 +263,26 @@ $(document).ready(function() {
 
     $(document).on('click', '.reprint', function(){
         var invoicecode =  $(this).attr('code');
-        alert(invoicecode)
         var postdata = { invoicecode : invoicecode};
         var ajaxurl =  urlroot + '/invoicing/onlinereprint';
-        alert(ajaxurl);
-        AjaxPostRequest(ajaxurl, postdata)
+
+        $.ajax({
+            type: "POST",
+            url: ajaxurl,
+            data : postdata,
+            beforeSend: function () {
+                $.blockUI();
+            },
+            success: function (text) {
+               console.log(text)
+            },
+            complete: function () {
+                $.unblockUI();
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                alert(xhr.status + " " + thrownError);
+            }
+        });
     })
 
 
