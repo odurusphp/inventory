@@ -262,10 +262,11 @@ $(document).ready(function() {
     })
 
     $(document).on('click', '.reprint', function(){
-
         var invoicecode =  $(this).attr('code');
+        alert(invoicecode)
         var postdata = { invoicecode : invoicecode};
         var ajaxurl =  urlroot + '/invoicing/onlinereprint';
+        alert(ajaxurl);
         AjaxPostRequest(ajaxurl, postdata)
     })
 
