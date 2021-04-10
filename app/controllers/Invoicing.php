@@ -156,6 +156,62 @@ class Invoicing extends Controller
         }
     }
 
+    public function onlinereprint(){
+        $curl = curl_init();
+        $invoicecode = $_GET['invoicecode'];
+        $userid = $_SESSION['userid'];
+        $user = new User($userid);
+        $name = $user->recordObject->firstname;
+
+        $invoicedata = Invoices::getInvoiceBYCode($invoicecode);
+        $gettotalpayments =  Payments::getPaymentsbyCode($invoicecode);
+        $finalamount = $gettotalpayments->finalamount;
+        //$totalamtonivoice = $gettotalpayments->amount;
+        $discountpercent = $invoicedata->discount;
+        $totalamt = $discountpercent + $finalamount;
+
+        $idata = [];
+        foreach ($invoicedata as $get){
+            $amount = $get->amount;
+            $quantity = $get->quantity;
+            $type = $get->type;
+            $productid = $get->productid;
+            $pro = new Product($productid);
+            $productname = $pro->recordObject->productname;
+            $idata[]  = ['amount'=>$amount, 'product'=>$productname,
+                'quantity'=>$quantity, 'type'=>$type];
+
+
+        }
+
+        $data = json_encode(['invoicedata'=>$idata, 'discountpercent'=>$discountpercent,
+            'finalamount'=>$finalamount, 'name'=>$name, 'invoicecode'=>$invoicecode,
+            'totalamt'=>$totalamt]);
+
+
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => NGROK_URL.'/print/reprint.php',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "POST",
+            CURLOPT_POSTFIELDS =>$data,
+            CURLOPT_HTTPHEADER => array(
+                "Accept: application/json",
+                "Content-Type: application/json"
+            ),
+        ));
+
+        $response = curl_exec($curl);
+        curl_close($curl);
+        //echo $response;
+
+    }
+
 
 
 }
