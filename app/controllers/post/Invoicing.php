@@ -695,39 +695,8 @@ class Invoicing extends PostController
     public function reprint(){
         $invoicecode = $_POST['invoicecode'];
         $this->onlinereprint($invoicecode);
+        header('Location:' . URLROOT . '/invoicing');
         exit;
-
-        $userid = $_SESSION['userid'];
-        $user = new User($userid);
-        $name = $user->recordObject->firstname;
-
-        $invoicedata = Invoices::getInvoiceBYCode($invoicecode);
-        $gettotalpayments =  Payments::getPaymentsbyCode($invoicecode);
-        $finalamount = $gettotalpayments->finalamount;
-        //$totalamtonivoice = $gettotalpayments->amount;
-        $discountpercent = $invoicedata->discount;
-        $totalamt = $discountpercent + $finalamount;
-
-        $idata = [];
-        foreach ($invoicedata as $get){
-            $amount = $get->amount;
-            $quantity = $get->quantity;
-            $type = $get->type;
-            $productid = $get->productid;
-            $pro = new Product($productid);
-            $productname = $pro->recordObject->productname;
-            $idata[]  = ['amount'=>$amount, 'product'=>$productname,
-                'quantity'=>$quantity, 'type'=>$type];
-
-
-        }
-
-        $data = ['invoicedata'=>$idata, 'discountpercent'=>$discountpercent,
-            'finalamount'=>$finalamount, 'name'=>$name, 'invoicecode'=>$invoicecode,
-            'totalamt'=>$totalamt];
-
-        $this->view('pages/reprint', $data);
-
     }
 
 
