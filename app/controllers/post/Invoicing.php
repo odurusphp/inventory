@@ -484,7 +484,7 @@ class Invoicing extends PostController
     }
 
     public function onlinereprint($invoicecode){
-        $curl = curl_init();
+
         $userid = $_SESSION['userid'];
         $user = new User($userid);
         $name = $user->recordObject->firstname;
@@ -515,7 +515,7 @@ class Invoicing extends PostController
             'totalamt'=>$totalamt]);
 
 
-
+        $curl = curl_init();
         curl_setopt_array($curl, array(
             CURLOPT_URL => NGROK_URL.'/print/reprint.php',
             CURLOPT_RETURNTRANSFER => true,
@@ -695,6 +695,7 @@ class Invoicing extends PostController
     public function reprint(){
         $invoicecode = $_POST['invoicecode'];
         $this->onlinereprint($invoicecode);
+        exit;
 
         $userid = $_SESSION['userid'];
         $user = new User($userid);
