@@ -75,7 +75,7 @@
                             <td><?php echo number_format($get->discount,2)  ?></td>
                             <td><?php echo number_format($get->finalamount,2)  ?></td>
                              <td><a href="#" class="viewtransactions" code="<?php echo $get->invoicecode ?>">View</a></td>
-                             <td><a target="_self" href="/invoicing/reprint/<?php echo $get->invoicecode  ?>"  class='00reprint' code="<?php echo $get->invoicecode ?>" >Re-print</a></td>
+                             <td><a href="/invoicing/reprint/<?php echo $get->invoicecode ?>"   code="<?php echo $get->invoicecode ?>" >Re-print</a></td>
                         </tr>
                         <?php endforeach  ?>
                     </table>
@@ -113,7 +113,7 @@
                                     <td><?php echo number_format($get->discount,2)  ?></td>
                                     <td><?php echo number_format($get->finalamount,2)  ?></td>
                                     <td><a href="#" class="viewtransactions" code="<?php echo $get->invoicecode ?>">View</a></td>
-                                    <td><a href="#"  class='reprint' code="<?php echo $get->invoicecode ?>" >Re-print</a></td>
+                                    <td><a href="/invoicing/reprint/<?php echo $get->invoicecode ?>">Re-print</a></td>
                                 </tr>
                             <?php endforeach  ?>
                         </table>

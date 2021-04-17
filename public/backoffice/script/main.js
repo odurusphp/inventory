@@ -264,10 +264,10 @@ $(document).ready(function() {
     $(document).on('click', '.reprint', function(){
         var invoicecode =  $(this).attr('code');
         var postdata = { invoicecode : invoicecode};
-        var ajaxurl =  urlroot + '/invoicing/onlinereprint';
+        var ajaxurl =  urlroot + '/invoicing/reprint';
 
         $.ajax({
-            type: "GET",
+            type: "POST",
             url: ajaxurl,
             data : postdata,
             beforeSend: function () {
