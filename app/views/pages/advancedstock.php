@@ -28,12 +28,12 @@
                 <form method="post">
                     <table>
                         <tr>
-                            <td><input class="form-control" placeholder="From" name="from" id="from" readonly/></td>
-                            <td><input class="form-control" placeholder="To" name="to" id="to" readonly/></td>
+                            <td><input required class="form-control" placeholder="From" name="from" id="from" readonly/></td>
+                            <td><input required class="form-control" placeholder="To" name="to" id="to" readonly/></td>
                             <td><button type="submit" name="searchstock" style="color:#fff" class="btn btn-sm btn-warning pull-right">
                                     <i class = 'fa fa-search'></i> Search </button></td>
-
-
+                            <td><button type="submit" name=" downloadsearchstock" style="color:#fff" class="btn btn-sm btn-dark pull-right">
+                                    <i class = 'fa fa-search'></i> Downloadcsv </button></td>
                         </tr>
                     </table>
                 </form>

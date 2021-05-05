@@ -13,6 +13,28 @@ class Invoicing extends PostController
         $from = date('Y-m-d', strtotime($_POST['from']));
         $to =   date('Y-m-d', strtotime($_POST['to']));;
 
+        if(isset($_POST['downloadreport'])){
+            $paymentsearchdata = Payments::listAllPaymentstbyRange($from, $to);
+
+            header('Content-Type: text/csv; charset=utf-8');
+            header('Content-Disposition: attachment; filename='.'sales.csv');
+            $csvheader = array('Transaction Code', 'Date', 'Amount', 'Discount', 'Total Amount');
+            $output = fopen('php://output', 'w');
+            fputcsv($output, $csvheader);
+            foreach ($paymentsearchdata as $get){
+                $invoicecode = $get->invoicecode;
+                $paydate =$get->paydate;
+                $amount = number_format($get->amount,2);
+                $discount = number_format($get->discount,2);
+                $total = number_format($get->finalamount,2);
+                $allpaydata = [$invoicecode, $paydate,  $amount, $discount, $total];
+                fputcsv($output, $allpaydata);
+            }
+
+            exit;
+
+        }
+
         $paymentsearchdata = Payments::listAllPaymentstbyRange($from, $to);
         $totalsales = Payments::totalsales($from, $to);
         $data = ['paymentsearchdata'=>$paymentsearchdata, 'totalsales'=>$totalsales];
@@ -239,6 +261,8 @@ class Invoicing extends PostController
         $oldquantity = $pro->recordObject->quantity;
         $oldoriginalqty = $pro->recordObject->originalquantity;
         $pieces =  $pro->recordObject->pieces;
+        $catid =  $pro->recordObject->catid;
+        $productname =  $pro->recordObject->productname;
 
         $newqty = $this->newquantity($type, $oldquantity, $invqty, $pieces, $productid);
         $neworigqty = $this->neworiginalquantity($type, $oldoriginalqty, $invqty, $pieces, $productid);
@@ -644,6 +668,7 @@ class Invoicing extends PostController
     }
 
     private function newquantity($type, $oldquantity, $qty, $pieces, $productid = null){
+
         if($type == 'Full'){
             $newquantity = $oldquantity - $qty;
         }elseif($type == 'Pieces'){
@@ -651,8 +676,25 @@ class Invoicing extends PostController
         }
 
         $p = new Product($productid);
+        $oldquantity = $p->recordObject->quantity;
+        $catid =  $p->recordObject->catid;
+        $productname =  $p->recordObject->productname;
+
         $p->recordObject->quantity = $newquantity;
         $p->store();
+
+         if($catid == 15){
+             $telephone = '054446770';
+         }elseif($catid == 16){
+             $telephone = '0546503888';
+         }elseif($catid == 17){
+             $telephone = '0265159985';
+         }
+        $ownertelephone = '0243144908';
+
+        sendproductSMS($telephone, $productname, $oldquantity, $qty, $newquantity);
+        //Send Owner SMS
+        sendproductSMS($ownertelephone, $productname, $oldquantity, $qty, $newquantity);
 
     }
 

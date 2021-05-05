@@ -44,9 +44,36 @@ class Pages extends PostController {
 
         public function advancedstock(){
             new RoleGuard('Report');
+            $from =  date('Y-m-d', strtotime($_POST['from']));
+            $to = date('Y-m-d', strtotime($_POST['to']));
+            if(isset($_POST['downloadsearchstock'])) {
+                header('Content-Type: text/csv; charset=utf-8');
+                header('Content-Disposition: attachment; filename='.'stock.csv');
+                $csvheader = array('Product name', 'Category', 'Quantity in Stock', 'Quantity Sold',);
+                $output = fopen('php://output', 'w');
+                fputcsv($output, $csvheader);
+               $allproducts = Invoices::getpurchaseoRange($from,  $to);
+               foreach($allproducts as $get){
+                   $productcount = Product::getProductCountById($get->productid);
+                   if ($productcount > 0) {
+                       $pro = new Product($get->productid);
+                       $invoicedate = date('Y-m-d');
+                       $productname = $pro->recordObject->productname;
+                       $category = Categories::getCategoryById($pro->recordObject->catid);
+                       $quantity = $pro->recordObject->quantity;
+                       $sold = Invoices::gettotalsoldbyRange($from, $to, $get->productid);
+                       $alldata = [$productname, $category, $quantity, $sold];
+                       fputcsv($output, $alldata);
+                    }
+               }
+               exit;
+            }
+
+
+
+
             if(isset($_POST['searchstock'])) {
-                $from =  date('Y-m-d', strtotime($_POST['from']));
-                $to = date('Y-m-d', strtotime($_POST['to']));
+
                 $today = date('Y-m-d');
                 $allproducts = Invoices::getpurchaseoRange($from,  $to);
                 $productcount = Product::getProductCount();
@@ -59,9 +86,9 @@ class Pages extends PostController {
                 $paymentstoday = Payments::listAllPaymentstoday();
 
                 $data = ['products' => $allproducts, 'productcount' => $productcount, 'outofstock' => $outofstock,
-                    'totalpayments' => $totalpayments, 'totalpaymentstoday' => $totaltoday,
-                    'outofstockdata' => $outofstockdata, 'paymentstoday' => $paymentstoday, 'from'=>$from,
-                    'to'=>$to
+                         'totalpayments' => $totalpayments, 'totalpaymentstoday' => $totaltoday,
+                          'outofstockdata' => $outofstockdata, 'paymentstoday' => $paymentstoday, 'from'=>$from,
+                          'to'=>$to
                 ];
                 $this->view('pages/advancedstock', $data);
             }

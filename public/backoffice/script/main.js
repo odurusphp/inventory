@@ -246,7 +246,7 @@ $(document).ready(function() {
     $(document).on('focusout', '#amountpaid', function(){
         var amountpaid = $(this).val();
         var afterdiscount = $('#afterdiscount').val();
-        var balance = amountpaid - afterdiscount;
+        var balance = parseFloat(amountpaid) - parseFloat(afterdiscount);
         $('#balance').val(balance);
     })
 

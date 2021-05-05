@@ -30,8 +30,10 @@
                     <tr>
                         <td><input class="form-control" placeholder="From" name="from" id="from" readonly/></td>
                         <td><input class="form-control" placeholder="To" name="to" id="to" readonly/></td>
-                        <td><button type="submit" name="searchpayment" style="color:#fff" class="btn btn-sm btn-warning pull-right">
+                        <td><button type="submit" required name="searchpayment" style="color:#fff" class="btn btn-sm btn-warning pull-right">
                                 <i class = 'fa fa-search'></i> Search </button></td>
+                        <td><button required type="submit" name="downloadreport"  style="color:#fff" class="btn btn-sm btn-dark pull-right">
+                                <i class = 'fa fa-download'></i> Download CSV</button></td>
 
                         <td width="60%">
                             <a href="/invoicing/refund"  style="color:#fff"

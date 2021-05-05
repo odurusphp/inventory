@@ -183,7 +183,7 @@
                                     <tr>
                                         <td colspan="3"></td>
 
-                                        <td>Balancs:</td>
+                                        <td>Balance:</td>
                                         <td> <input  class="form-control" style="font-size: 20px; font-weight: bold" type="text" name="balance" id="balance"  readonly/></td>
                                     </tr>
 

@@ -102,7 +102,7 @@
             <div class="col-lg-7">
                 <div class="card">
                     <div class="card-body">
-                        <table class="table table-sm table-striped table-responsive apptables">
+                        <table class="table table-sm table-striped apptables">
                             <thead>
                             <tr>
                                 <th scope="col">#</th>
