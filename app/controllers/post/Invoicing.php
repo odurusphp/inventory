@@ -691,10 +691,14 @@ class Invoicing extends PostController
              $telephone = '0265159985';
          }
         $ownertelephone = '0243144908';
+        //$ownertelephone = '0265742649';
 
         sendproductSMS($telephone, $productname, $oldquantity, $qty, $newquantity);
         //Send Owner SMS
         sendproductSMS($ownertelephone, $productname, $oldquantity, $qty, $newquantity);
+        $bossnumber = '02442420587';
+        //Boss SMS
+        sendproductSMS($bossnumber, $productname, $oldquantity, $qty, $newquantity);
 
     }
 
