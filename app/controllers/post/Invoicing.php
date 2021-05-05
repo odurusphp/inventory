@@ -684,19 +684,19 @@ class Invoicing extends PostController
         $p->store();
 
          if($catid == 15){
-             $telephone = '054446770';
+             $telephone = '0544466770';
          }elseif($catid == 16){
              $telephone = '0546503888';
          }elseif($catid == 17){
              $telephone = '0265159985';
          }
         $ownertelephone = '0243144908';
-        //$ownertelephone = '0265742649';
+
 
         sendproductSMS($telephone, $productname, $oldquantity, $qty, $newquantity);
         //Send Owner SMS
         sendproductSMS($ownertelephone, $productname, $oldquantity, $qty, $newquantity);
-        $bossnumber = '02442420587';
+        $bossnumber = '0244240587';
         //Boss SMS
         sendproductSMS($bossnumber, $productname, $oldquantity, $qty, $newquantity);
 
@@ -722,8 +722,28 @@ class Invoicing extends PostController
         }
 
         $p = new Product($productid);
+        $catid =  $p->recordObject->catid;
+        $productname =  $p->recordObject->productname;
+
         $p->recordObject->quantity = $newquantity;
         $p->store();
+
+
+        if($catid == 15){
+            $telephone = '0544466770';
+        }elseif($catid == 16){
+            $telephone = '0546503888';
+        }elseif($catid == 17){
+            $telephone = '0265159985';
+        }
+        $ownertelephone = '0243144908';
+
+        sendrefundSMS($telephone, $productname, $oldquantity, $qty, $newquantity);
+        //Send Owner SMS
+        sendrefundSMS($ownertelephone, $productname, $oldquantity, $qty, $newquantity);
+        $bossnumber = '0244240587';
+        //Boss SMS
+        sendrefundSMS($bossnumber, $productname, $oldquantity, $qty, $newquantity);
 
     }
 

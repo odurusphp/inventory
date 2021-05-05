@@ -68,3 +68,26 @@ function sendproductSMS($telephone, $product, $quantity, $newquantity, $remainin
 
 
 }
+
+function sendrefundSMS($telephone, $product, $quantity, $newquantity, $remaining){
+
+    $key=SMS_KEY;
+    $message =  'Product '.$product . ' has  been refunded '. $newquantity. ' and remaining '. $remaining ;
+    $message=urlencode($message);
+    $sender_id = 'SMASTERS';
+
+    $url="https://apps.mnotify.net/smsapi?key=$key&to=$telephone&msg=$message&sender_id=$sender_id";
+    $result=file_get_contents($url);
+
+    $apiresponse = json_decode($result, true);
+    $apicode = $apiresponse['code'];
+
+    if($apicode == '1000') {
+        return 'success';
+    }else{
+        return  'error';
+    }
+
+
+}
+
