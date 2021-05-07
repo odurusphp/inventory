@@ -52,7 +52,7 @@ function sendproductSMS($telephone, $product, $quantity, $newquantity, $remainin
      $key=SMS_KEY;
      $message =  'Product '.$product . ' has sold '. $newquantity. ' and remaining '. $remaining ;
      $message=urlencode($message);
-     $sender_id = 'SMASTERS';
+     $sender_id = 'NMNAMU';
 
     $url="https://apps.mnotify.net/smsapi?key=$key&to=$telephone&msg=$message&sender_id=$sender_id";
     $result=file_get_contents($url);
@@ -74,7 +74,7 @@ function sendrefundSMS($telephone, $product, $quantity, $newquantity, $remaining
     $key=SMS_KEY;
     $message =  'Product '.$product . ' has  been refunded '. $newquantity. ' and remaining '. $remaining ;
     $message=urlencode($message);
-    $sender_id = 'SMASTERS';
+    $sender_id = 'NMNAMU';
 
     $url="https://apps.mnotify.net/smsapi?key=$key&to=$telephone&msg=$message&sender_id=$sender_id";
     $result=file_get_contents($url);
