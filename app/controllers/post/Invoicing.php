@@ -692,7 +692,6 @@ class Invoicing extends PostController
          }
         $ownertelephone = '0243144908';
 
-
         sendproductSMS($telephone, $productname, $oldquantity, $qty, $newquantity);
         //Send Owner SMS
         sendproductSMS($ownertelephone, $productname, $oldquantity, $qty, $newquantity);
@@ -729,7 +728,7 @@ class Invoicing extends PostController
         if($catid == 15){
             $telephone = '0544466770';
         }elseif($catid == 16){
-            $telephone = '0546503888';
+            $telephone = '0263200066';
         }elseif($catid == 17){
             $telephone = '0265159985';
         }
@@ -738,9 +737,7 @@ class Invoicing extends PostController
         sendrefundSMS($telephone, $productname, $oldquantity, $qty, $newquantity);
         //Send Owner SMS
         sendrefundSMS($ownertelephone, $productname, $oldquantity, $qty, $newquantity);
-        $bossnumber = '0244240587';
-        //Boss SMS
-        sendrefundSMS($bossnumber, $productname, $oldquantity, $qty, $newquantity);
+
 
     }
 
