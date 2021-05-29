@@ -80,7 +80,7 @@
                         </div>
                     </div>
                     <div class="table-responsive">
-                        <table class="table table-sm table-success table-striped">
+                        <table class="table table-sm  table-striped">
                             <thead>
                             <tr>
                                 <th>Product Name</th>
@@ -114,7 +114,7 @@
                             Out of Stock Products
                         </div>
                         <div class="table-responsive">
-                            <table class="table table-sm table-danger table-striped">
+                            <table class="table table-sm table-warning table-striped">
                                 <thead>
                                 <tr style="font-weight: bold">
                                     <th>Product Name</th>
