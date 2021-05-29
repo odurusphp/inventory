@@ -689,11 +689,11 @@ class Invoicing extends PostController
          }elseif($catid == 17){
              $telephone = '0265159985';
          }
-        $ownertelephone = '0243144908';
+        //$ownertelephone = '0243144908';
 
         sendproductSMS($telephone, $productname, $oldquantity, $qty, $newquantity);
         //Send Owner SMS
-        sendproductSMS($ownertelephone, $productname, $oldquantity, $qty, $newquantity);
+        //sendproductSMS($ownertelephone, $productname, $oldquantity, $qty, $newquantity);
 
     }
 
@@ -732,11 +732,11 @@ class Invoicing extends PostController
         }elseif($catid == 17){
             $telephone = '0265159985';
         }
-        $ownertelephone = '0243144908';
+        //$ownertelephone = '0243144908';
 
         sendrefundSMS($telephone, $productname, $oldquantity, $qty, $newquantity);
         //Send Owner SMS
-        sendrefundSMS($ownertelephone, $productname, $oldquantity, $qty, $newquantity);
+        //sendrefundSMS($ownertelephone, $productname, $oldquantity, $qty, $newquantity);
 
 
     }

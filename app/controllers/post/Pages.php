@@ -156,6 +156,8 @@ class Pages extends PostController {
                 $pro = new Product($productid);
                 $pdata = $pro->recordObject;
                 $oldqty = $pdata->quantity;
+                $catid = $pdata->catid;
+                $productname = $pdata->productname;
                 $oldpieces = $pdata->pieces;
                 $newquantity = $rsquantity + $oldqty;
                 $originalquantity =   $newquantity  * $oldpieces;
@@ -165,6 +167,16 @@ class Pages extends PostController {
                 $pro->recordObject->originalquantity = $originalquantity;
 
                 if ($pro->store()) {
+                    if($catid == 15){
+                        // $telephone = '0544466770';
+                        $telephone = '0541105550';
+                    }elseif($catid == 16){
+                        $telephone = '0263200066';
+                    }elseif($catid == 17){
+                        $telephone = '0265159985';
+                    }
+                    //$ownertelephone = '0243144908';
+                    sendRestockSMS($telephone, $productname, $oldqty, $newquantity);
                     $catdata = Categories::listAll();
                     $historydata = Producthistory::getHistoryById($productid);
                     $productdata = $pro->recordObject;
@@ -226,6 +238,8 @@ class Pages extends PostController {
                 $pro = new Product($productid);
                 $pdata = $pro->recordObject;
                 $oldqty = $pdata->quantity;
+                $catid = $pdata->catid;
+                $productname = $pdata->productname;
                 $oldpieces = $pdata->pieces;
                 //$newquantity = $resetquantity;
                 $originalquantity =   $rsquantity  * $oldpieces;
@@ -235,6 +249,17 @@ class Pages extends PostController {
                 $pro->recordObject->originalquantity = $originalquantity;
 
                 if ($pro->store()) {
+                    if($catid == 15){
+                        // $telephone = '0544466770';
+                        $telephone = '0541105550';
+                    }elseif($catid == 16){
+                        $telephone = '0263200066';
+                    }elseif($catid == 17){
+                        $telephone = '0265159985';
+                    }
+                    //$ownertelephone = '0243144908';
+
+                    sendRestockSMS($telephone, $productname, $oldqty, $newquantity);
                     $catdata = Categories::listAll();
                     $historydata = Producthistory::getHistoryById($productid);
                     $productdata = $pro->recordObject;
