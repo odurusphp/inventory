@@ -13,8 +13,10 @@ $xmlpath = CLOCALPATH.'/public/xml/';
 define('XMLPATH', $xmlpath);
 
 define('ROUTE_REQUEST',true);
+define('ENV', 'Pokuase');
 
 define('NGROK_URL','https://inventorynamu.ngrok.io');
+define('NGROK_URL_POKUASE','https://inventorypokuase.ngrok.io');
 define('USERNAME', 'yawshadi23@gmail.com');
 define('PASSWORD', 'wonderful123456789');
 define('EMAIL', 'info@fdaghana.gov');
