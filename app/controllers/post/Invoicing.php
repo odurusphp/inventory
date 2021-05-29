@@ -531,10 +531,10 @@ class Invoicing extends PostController
             $idata[]  = ['amount'=>$amount, 'product'=>$productname,
                 'quantity'=>$quantity, 'type'=>$type];
         }
-
+        $url = ENV == 'Pokuase' ? NGROK_URL_POKUASE : NGROK_URL;
         $data = json_encode(['invoicedata'=>$idata, 'discountpercent'=>$discountpercent,
             'finalamount'=>$finalamount, 'name'=>$name, 'invoicecode'=>$invoicecode,
-            'totalamt'=>$totalamt]);
+            'totalamt'=>$totalamt, 'url'=>$url]);
 
 
         $curl = curl_init();
