@@ -258,6 +258,8 @@ class Pages extends PostController {
             $outofstocklimit =  isset($_POST['outofstocklimit']) ? trim($_POST['outofstocklimit']) : '';
             $productid = $_POST['productid'];
 
+            $originalquantity =  $packquantity *  $quantity;
+
             $pro = new Product($productid);
             $prodata =& $pro->recordObject;
             $prodata->productname = $productname;
@@ -267,11 +269,14 @@ class Pages extends PostController {
             $prodata->costprice = $costprice;
             $prodata->saleprice = $saleprice;
             $prodata->packprice = $packprice;
+            $prodata->pieces = $packquantity;
+            $prodata->originalquantity = $originalquantity;
             $prodata->stocklimit = $outofstocklimit;
             if($pro->store()){
                 $catdata = Categories::listAll();
                 $historydata = Producthistory::getHistoryById($productid);
                 $productdata = $pro->recordObject;
+
                 $data = ['productdata' => $productdata, 'catdata' => $catdata, 'historydata' => $historydata];
                 $this->view('pages/editproduct', $data);
                 exit;

@@ -68,7 +68,7 @@
                         <label class="col-lg-4 col-form-label form-control-label">No. of pieces</label>
                         <div class="col-lg-8">
                             <input name="packquantity" id="packquantity" class="form-control" type="text"
-                                   value="<?php echo $data['productdata']->pieces ?>" readonly
+                                   value="<?php echo $data['productdata']->pieces ?>"
                             >
                         </div>
                     </div>
