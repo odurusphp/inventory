@@ -169,7 +169,7 @@
                                         <td>Total After Discount</td>
                                         <td> <input class="form-control" style="font-size: 20px; font-weight: bold" type="text"
                                                     name="afterdiscount" id="afterdiscount"   readonly
-                                                    value = '<?php echo number_format($total,2)  ?>' /></td>
+                                                    value = '<?php echo $total  ?>' /></td>
                                     </tr>
 
                                     <tr>

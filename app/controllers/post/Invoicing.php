@@ -466,7 +466,7 @@ class Invoicing extends PostController
         $finalamount = $gettotalpayments->finalamount;
         $totalamtonivoice = $gettotalpayments->amount;
         $totalamt = $discountpercent + $finalamount;
-
+        $balance = round($balance,2);
         $idata = [];
         foreach ($invoicedata as $get){
             $amount = $get->amount;
@@ -530,8 +530,6 @@ class Invoicing extends PostController
             $productname = $pro->recordObject->productname;
             $idata[]  = ['amount'=>$amount, 'product'=>$productname,
                 'quantity'=>$quantity, 'type'=>$type];
-
-
         }
 
         $data = json_encode(['invoicedata'=>$idata, 'discountpercent'=>$discountpercent,
@@ -684,7 +682,8 @@ class Invoicing extends PostController
         $p->store();
 
          if($catid == 15){
-             $telephone = '0544466770';
+            // $telephone = '0544466770';
+             $telephone = '0541105550';
          }elseif($catid == 16){
              $telephone = '0263200066';
          }elseif($catid == 17){
@@ -726,7 +725,8 @@ class Invoicing extends PostController
 
 
         if($catid == 15){
-            $telephone = '0544466770';
+            //$telephone = '0544466770';
+            $telephone = '0541105550';
         }elseif($catid == 16){
             $telephone = '0263200066';
         }elseif($catid == 17){
