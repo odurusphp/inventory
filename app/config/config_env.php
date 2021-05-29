@@ -13,7 +13,7 @@ $xmlpath = CLOCALPATH.'/public/xml/';
 define('XMLPATH', $xmlpath);
 
 define('ROUTE_REQUEST',true);
-define('ENV', 'Pokuase');
+
 
 define('NGROK_URL','https://inventorynamu.ngrok.io');
 define('NGROK_URL_POKUASE','https://inventorypokuase.ngrok.io');
