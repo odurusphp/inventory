@@ -202,16 +202,28 @@ class Pages extends PostController {
             if ($ph->store()) {
                 $pro = new Product($productid);
                 $pdata = $pro->recordObject;
+                $productname = $pdata->productname;
                 $oldqty = $pdata->quantity;
                 $oldpieces = $pdata->pieces;
                 $newquantity =  $oldqty - $rsquantity;
                 $originalquantity =   $newquantity  * $oldpieces;
+                $catid = $pdata->catid;
 
                 //Update Product new quantity
                 $pro->recordObject->quantity = $newquantity;
                 $pro->recordObject->originalquantity = $originalquantity;
 
                 if ($pro->store()) {
+                    if($catid == 15){
+                        // $telephone = '0544466770';
+                        $telephone = '0541105550';
+                    }elseif($catid == 16){
+                        $telephone = '0263200066';
+                    }elseif($catid == 17){
+                        $telephone = '0265159985';
+                    }
+                    //$ownertelephone = '0243144908';
+                    sendRestockSMS($telephone, $productname, $oldqty, $newquantity);
                     $catdata = Categories::listAll();
                     $historydata = Producthistory::getHistoryById($productid);
                     $productdata = $pro->recordObject;
