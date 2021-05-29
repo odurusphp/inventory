@@ -114,7 +114,7 @@
                             Out of Stock Products
                         </div>
                         <div class="table-responsive">
-                            <table class="table table-sm table-warning table-striped">
+                            <table class="table table-sm table-warning table-striped table-info">
                                 <thead>
                                 <tr style="font-weight: bold">
                                     <th>Product Name</th>
