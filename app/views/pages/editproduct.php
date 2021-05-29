@@ -124,8 +124,9 @@
                                 <td><input name='rsquantity' class="form-control" type="text"  placeholder="Enter Quantity" required/>
                                     <input name='productid' class="form-control" type="hidden" value="<?php  echo $data['productdata']->productid  ?>" />
                                 </td>
-                                <td><input name="restock" type="submit" class="btn btn-primary" value="re-stock"></td>
                                 <td><input name="deletestock" type="submit" class="btn btn-danger" value="Remove stock"></td>
+                                <td><input name="restock" type="submit" class="btn btn-primary" value="re-stock"></td>
+                                <td><input name="resetstock" type="submit" class="btn btn-dark" value="Reset stock"></td>
                             </tr>
                         </table>
                         </form>

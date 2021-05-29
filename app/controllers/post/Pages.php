@@ -210,6 +210,41 @@ class Pages extends PostController {
             }
         }
 
+        if(isset($_POST['resetstock'])){
+
+            new RoleGuard('Re-stock Product');
+
+            $productid = $_POST['productid'];
+            $rsquantity = $_POST['rsquantity'];
+            $ph = new Producthistory();
+            $ph->recordObject->productid = $productid;
+            $ph->recordObject->quantity = $rsquantity;
+            $ph->recordObject->description = 'Reset Stock';
+            $ph->recordObject->historydate = date('Y-m-d');
+            $ph->recordObject->userid = $_SESSION['userid'];
+            if ($ph->store()) {
+                $pro = new Product($productid);
+                $pdata = $pro->recordObject;
+                $oldqty = $pdata->quantity;
+                $oldpieces = $pdata->pieces;
+                //$newquantity = $resetquantity;
+                $originalquantity =   $rsquantity  * $oldpieces;
+
+                //Update Product new quantity
+                $pro->recordObject->quantity = $rsquantity;
+                $pro->recordObject->originalquantity = $originalquantity;
+
+                if ($pro->store()) {
+                    $catdata = Categories::listAll();
+                    $historydata = Producthistory::getHistoryById($productid);
+                    $productdata = $pro->recordObject;
+                    $data = ['productdata' => $productdata, 'catdata' => $catdata, 'historydata' => $historydata];
+                    $this->view('pages/editproduct', $data);
+                    exit;
+                }
+            }
+        }
+
         if(isset($_POST['editproduct'])){
             $productname = isset($_POST['productname']) ? trim($_POST['productname']) : '';
             $categoryid = isset($_POST['categoryid']) ? trim($_POST['categoryid']) : '';
