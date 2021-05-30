@@ -539,6 +539,8 @@ class Invoicing extends PostController
 
         $curl = curl_init();
         $url = ENV == 'Pokuase' ? NGROK_URL_POKUASE : NGROK_URL;
+        echo $url;
+        exit;
         curl_setopt_array($curl, array(
             CURLOPT_URL => NGROK_URL_POKUASE.'/print/reprint.php',
             CURLOPT_RETURNTRANSFER => true,
