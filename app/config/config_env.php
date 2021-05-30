@@ -20,6 +20,8 @@ define('USERNAME', 'yawshadi23@gmail.com');
 define('PASSWORD', 'wonderful123456789');
 define('EMAIL', 'info@fdaghana.gov');
 define('SENDEREMAIL', 'info@fdaghana.gov');
+echo NGROK_URL_POKUASE;
+exit;
 
 
 
