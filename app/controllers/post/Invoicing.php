@@ -485,8 +485,9 @@ class Invoicing extends PostController
                 'finalamount'=>$finalamount, 'name'=>$name, 'invoicecode'=>$invoicecode,
                  'totalamt'=>$totalamt, 'balance'=>$balance, 'amountpaid'=>$amountpaid]);
 
+        $url = ENV == 'Pokuase' ? NGROK_URL_POKUASE : NGROK_URL;
         curl_setopt_array($curl, array(
-            CURLOPT_URL => NGROK_URL.'/print/onlineprint.php',
+            CURLOPT_URL => $url.'/print/onlineprint.php',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => "",
             CURLOPT_MAXREDIRS => 10,
@@ -539,8 +540,6 @@ class Invoicing extends PostController
 
         $curl = curl_init();
         $url = ENV == 'Pokuase' ? NGROK_URL_POKUASE : NGROK_URL;
-        echo $url;
-        exit;
         curl_setopt_array($curl, array(
             CURLOPT_URL => NGROK_URL_POKUASE.'/print/reprint.php',
             CURLOPT_RETURNTRANSFER => true,
