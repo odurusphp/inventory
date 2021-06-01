@@ -723,15 +723,13 @@ class Invoicing extends PostController
 
         $p->recordObject->quantity = $newquantity;
         $p->store();
-
-
+        
         if($catid == 15){
-            //$telephone = '0544466770';
-            $telephone = '0541105550';
+            $telephone = '0559687988';
         }elseif($catid == 16){
-            $telephone = '0263200066';
+            $telephone = '0558216152';
         }elseif($catid == 17){
-            $telephone = '0239979601';
+            $telephone = '0243602118';
         }
         //$ownertelephone = '0243144908';
 
