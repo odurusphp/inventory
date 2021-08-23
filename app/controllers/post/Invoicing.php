@@ -684,14 +684,13 @@ class Invoicing extends PostController
         $p->recordObject->quantity = $newquantity;
         $p->store();
 
-         if($catid == 15){
-            // $telephone = '0544466770';
-             $telephone = '0541105550';
-         }elseif($catid == 16){
-             $telephone = '0263200066';
-         }elseif($catid == 17){
-             $telephone = '0239979601';
-         }
+        if($catid == 15){
+            $telephone = '0266744131'; // Accessorries
+        }elseif($catid == 16){
+            $telephone = '0558216152';  // Profile
+        }elseif($catid == 17){
+            $telephone = '0239979601'; // Glass
+        }
         //$ownertelephone = '0243144908';
 
         sendproductSMS($telephone, $productname, $oldquantity, $qty, $newquantity);
@@ -728,12 +727,11 @@ class Invoicing extends PostController
 
 
         if($catid == 15){
-            //$telephone = '0544466770';
-            $telephone = '0541105550';
+            $telephone = '0266744131'; // Accessorries
         }elseif($catid == 16){
-            $telephone = '0263200066';
+            $telephone = '0558216152';  // Profile
         }elseif($catid == 17){
-            $telephone = '0239979601';
+            $telephone = '0239979601'; // Glass
         }
         //$ownertelephone = '0243144908';
 
