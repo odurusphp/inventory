@@ -107,6 +107,13 @@ class Product extends tableDataObject
         return $connectedDb->resultSet();
     }
 
+    public static function getSupplierData($cid, $supplier){
+        global $connectedDb;
+        $query = "select * from products where products.merchant = '$supplier'  ";
+        $connectedDb->prepare($query);
+        return $connectedDb->resultSet();
+    }
+
     public static function getCompanyProductCount($cid){
         global $connectedDb;
         $query = "select count(*) as ct  from company_products  inner join products ON
