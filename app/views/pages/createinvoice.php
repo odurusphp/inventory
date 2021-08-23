@@ -148,7 +148,7 @@
                                         <td>Discount</td>
                                         <td>
                                             <select class="form-control"  name="discount" id="discountval" invoicecode="<?php  echo  $_SESSION['invoicecode']  ?>">
-                                                <option value="0">Select</option>
+                                                <option value="0">0</option>
                                                 <?php  for($i =0; $i<=100;  $i++ ){?>
                                                     <option><?php echo $i  ?></option>
                                                 <?php  } ?>
@@ -177,7 +177,7 @@
 
                                         <td>Amount Paid</td>
                                         <td> <input  class="form-control" style="font-size: 20px; font-weight: bold" type="text" name="amountpaid" id="amountpaid"
-                                             /></td>
+                                             required /></td>
                                     </tr>
 
                                     <tr>
@@ -193,13 +193,12 @@
                                                     class="btn btn-danger pull-left btn-sm">
                                                 <i class="fa fa-trash"></i>  Cancel Invoice </button>
 
-                                            <button name="processinvoice" type="submit"
+                                            <button name="processinvoice" id="processinvoice" type="submit"
                                                                 class="btn btn-success pull-right btn-sm">
                                                 <i class="fa fa-print"></i>  Print Invoice </button></td>
                                     </tr>
                                 </table>
-
-
+                            </form>
 
                         </div>
                     </div>
