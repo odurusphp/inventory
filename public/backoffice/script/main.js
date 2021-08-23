@@ -248,6 +248,11 @@ $(document).ready(function() {
         var afterdiscount = $('#afterdiscount').val();
         var balance = parseFloat(amountpaid).toFixed(2) - parseFloat(afterdiscount).toFixed(2);
         $('#balance').val(balance.toFixed(2));
+        if(amountpaid < afterdiscount){
+            $('#processinvoice').prop( "disabled", true );
+        }else{
+            $('#processinvoice').prop( "disabled", false );
+        }
     })
 
     $(document).on('change', '#categoryid', function(){
