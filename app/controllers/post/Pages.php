@@ -168,11 +168,11 @@ class Pages extends PostController {
 
                 if ($pro->store()) {
                     if($catid == 15){
-                        $telephone = '0559687988';
+                        $telephone = '026465770'; // Accessorries
                     }elseif($catid == 16){
-                        $telephone = '0558216152';
+                        $telephone = '0546044744';  // Profile
                     }elseif($catid == 17){
-                        $telephone = '0243602118';
+                        $telephone = '0243602118'; // Glass
                     }
                     //$ownertelephone = '0243144908';
                     sendRestockSMS($telephone, $productname, $oldqty, $newquantity);
