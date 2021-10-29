@@ -685,7 +685,7 @@ class Invoicing extends PostController
         $p->store();
 
         if($catid == 15){
-            $telephone = '0266744131'; // Accessorries
+            $telephone = '0263200066'; // Accessorries
         }elseif($catid == 16){
             $telephone = '0558216152';  // Profile
         }elseif($catid == 17){
@@ -727,7 +727,7 @@ class Invoicing extends PostController
 
 
         if($catid == 15){
-            $telephone = '0266744131'; // Accessorries
+            $telephone = '0263200066'; // Accessorries
         }elseif($catid == 16){
             $telephone = '0558216152';  // Profile
         }elseif($catid == 17){
