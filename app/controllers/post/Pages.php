@@ -214,12 +214,11 @@ class Pages extends PostController {
 
                 if ($pro->store()) {
                     if($catid == 15){
-                        // $telephone = '0544466770';
-                        $telephone = '0541105550';
+                        $telephone = '0263200066'; // Accessorries
                     }elseif($catid == 16){
-                        $telephone = '0263200066';
+                        $telephone = '0558216152';  // Profile
                     }elseif($catid == 17){
-                        $telephone = '0239979601';
+                        $telephone = '0243144908'; // Glass
                     }
                     //$ownertelephone = '0243144908';
                     sendRemovestockSMS($telephone, $productname, $oldqty, $newquantity);
@@ -261,12 +260,11 @@ class Pages extends PostController {
 
                 if ($pro->store()) {
                     if($catid == 15){
-                        // $telephone = '0544466770';
-                        $telephone = '0541105550';
+                        $telephone = '0263200066'; // Accessorries
                     }elseif($catid == 16){
-                        $telephone = '0263200066';
+                        $telephone = '0558216152';  // Profile
                     }elseif($catid == 17){
-                        $telephone = '0239979601';
+                        $telephone = '0243144908'; // Glass
                     }
                     //$ownertelephone = '0243144908';
 
@@ -414,9 +412,6 @@ class Pages extends PostController {
 
 
     }
-
-
-
 
 
     private function insertuserrole($uid, $roleid){
