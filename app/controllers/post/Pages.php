@@ -168,11 +168,11 @@ class Pages extends PostController {
 
                 if ($pro->store()) {
                     if($catid == 15){
-                        $telephone = '026465770'; // Accessorries
+                        $telephone = '0244657022'; // Accessorries
                     }elseif($catid == 16){
-                        $telephone = '0546044744';  // Profile
+                        $telephone = '0244657022';  // Profile
                     }elseif($catid == 17){
-                        $telephone = '0243602118'; // Glass
+                        $telephone = '0244657022'; // Glass
                     }
                     //$ownertelephone = '0243144908';
                     sendRestockSMS($telephone, $productname, $oldqty, $newquantity);
@@ -214,11 +214,11 @@ class Pages extends PostController {
 
                 if ($pro->store()) {
                     if($catid == 15){
-                        $telephone = '026465770'; // Accessorries
+                        $telephone = '0244657022'; // Accessorries
                     }elseif($catid == 16){
-                        $telephone = '0546044744';  // Profile
+                        $telephone = '0244657022';  // Profile
                     }elseif($catid == 17){
-                        $telephone = '0243602118'; // Glass
+                        $telephone = '0244657022'; // Glass
                     }
                     //$ownertelephone = '0243144908';
                     sendRemovestockSMS($telephone, $productname, $oldqty, $newquantity);
@@ -260,11 +260,11 @@ class Pages extends PostController {
 
                 if ($pro->store()) {
                     if($catid == 15){
-                        $telephone = '026465770'; // Accessorries
+                        $telephone = '0244657022'; // Accessorries
                     }elseif($catid == 16){
-                        $telephone = '0546044744';  // Profile
+                        $telephone = '0244657022';  // Profile
                     }elseif($catid == 17){
-                        $telephone = '0243602118'; // Glass
+                        $telephone = '0244657022'; // Glass
                     }
                     //$ownertelephone = '0243144908';
 

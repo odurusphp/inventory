@@ -46,10 +46,30 @@ class Invoicing extends PostController
         if(isset($_POST['processrefund'])){
             $invoiceid = $_POST['invoiceid'];
             $refundqty = $_POST['refundqty'];
+            $qty = $_POST['qty'];
 
             $total = 0;
             $discountamount = 0;
             $totaldiscount = 0;
+
+            $refundcount = 0;
+            foreach($invoiceid  as  $key=>$invid){
+                $refundquantity = $refundqty[$key];
+                $nqty = $qty[$key];
+                if($nqty < $refundquantity ){
+                    $refundcount = $refundcount + 1;
+                }
+
+            }
+
+
+            if($refundcount > 0){
+                $refunddata = Refund::listAll();
+                $message = 'Refund quantity cannot be more than quantity on invoice';
+                $data = ['refunddata' => $refunddata, 'historydata'=>[], 'message'=>$message ];
+                $this->view('pages/refund', $data);
+                exit;
+            }
 
             foreach($invoiceid  as  $key=>$invid){
 
@@ -684,11 +704,11 @@ class Invoicing extends PostController
         $p->store();
 
         if($catid == 15){
-            $telephone = '026465770'; // Accessorries
+            $telephone = '0244657022'; // Accessorries
         }elseif($catid == 16){
-            $telephone = '0546044744';  // Profile
+            $telephone = '0244657022';  // Profile
         }elseif($catid == 17){
-            $telephone = '0243602118'; // Glass
+            $telephone = '0244657022'; // Glass
         }
         //$ownertelephone = '0243144908';
 
@@ -725,11 +745,11 @@ class Invoicing extends PostController
         $p->store();
 
         if($catid == 15){
-            $telephone = '026465770'; // Accessorries
+            $telephone = '0244657022'; // Accessorries
         }elseif($catid == 16){
-            $telephone = '0546044744';  // Profile
+            $telephone = '0244657022';  // Profile
         }elseif($catid == 17){
-            $telephone = '0243602118'; // Glass
+            $telephone = '0244657022'; // Glass
         }
         //$ownertelephone = '0243144908';
 

@@ -61,7 +61,8 @@
                                 <td><?php echo $pro->recordObject->productname ?></td>
                                 <td><?php echo $get->type ?></td>
                                 <td><?php echo $get->amount ?></td>
-                                <td><?php echo $get->quantity ?></td>
+                                <td><?php echo $get->quantity ?>
+                                    <input type="hidden" name="qty[]" value="<?php echo $get->quantity ?>"/></td>
                                 <td><input type="text" name="refundqty[]"/></td>
                             </tr>
                             <tr>
