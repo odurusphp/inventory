@@ -44,7 +44,7 @@
                         <table class="table table-bordered table-condensed table-sm" style="font-size: 12px">
                             <tr style="font-weight: 700">
                                 <td><input type="hidden" /></td>
-                                <td>Product </td>
+                                <td>Products </td>
                                 <td>Description </td>
                                 <td>Price</td>
                                 <td>Quantity</td>
@@ -61,7 +61,9 @@
                                 <td><?php echo $pro->recordObject->productname ?></td>
                                 <td><?php echo $get->type ?></td>
                                 <td><?php echo $get->amount ?></td>
-                                <td><?php echo $get->quantity ?></td>
+                                <td><?php echo $get->quantity ?>
+                                    <input type="hidden" name="qty[]" value="<?php echo $get->quantity ?>"/>
+                                </td>
                                 <td><input type="text" name="refundqty[]"/></td>
                             </tr>
                             <tr>

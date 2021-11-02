@@ -168,9 +168,9 @@ class Pages extends PostController {
 
                 if ($pro->store()) {
                     if($catid == 15){
-                        $telephone = '0263200066'; // Accessorries
+                        $telephone = '0243144908'; // Accessorries
                     }elseif($catid == 16){
-                        $telephone = '0558216152';  // Profile
+                        $telephone = '0243144908';  // Profile
                     }elseif($catid == 17){
                         $telephone = '0243144908'; // Glass
                     }
@@ -214,9 +214,9 @@ class Pages extends PostController {
 
                 if ($pro->store()) {
                     if($catid == 15){
-                        $telephone = '0263200066'; // Accessorries
+                        $telephone = '0243144908'; // Accessorries
                     }elseif($catid == 16){
-                        $telephone = '0558216152';  // Profile
+                        $telephone = '0243144908';  // Profile
                     }elseif($catid == 17){
                         $telephone = '0243144908'; // Glass
                     }
@@ -260,9 +260,9 @@ class Pages extends PostController {
 
                 if ($pro->store()) {
                     if($catid == 15){
-                        $telephone = '0263200066'; // Accessorries
+                        $telephone = '0243144908'; // Accessorries
                     }elseif($catid == 16){
-                        $telephone = '0558216152';  // Profile
+                        $telephone = '0243144908';  // Profile
                     }elseif($catid == 17){
                         $telephone = '0243144908'; // Glass
                     }

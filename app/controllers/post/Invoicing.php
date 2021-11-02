@@ -46,10 +46,30 @@ class Invoicing extends PostController
         if(isset($_POST['processrefund'])){
             $invoiceid = $_POST['invoiceid'];
             $refundqty = $_POST['refundqty'];
+            $qty = $_POST['qty'];
 
             $total = 0;
             $discountamount = 0;
             $totaldiscount = 0;
+
+            $refundcount = 0;
+            foreach($invoiceid  as  $key=>$invid){
+                $refundquantity = $refundqty[$key];
+                $nqty = $qty[$key];
+                if($nqty < $refundquantity ){
+                    $refundcount = $refundcount + 1;
+                }
+
+            }
+
+
+           if($refundcount > 0){
+               $refunddata = Refund::listAll();
+               $message = 'Refund quantity cannot be more than quantity on invoice';
+               $data = ['refunddata' => $refunddata, 'historydata'=>[], 'message'=>$message ];
+               $this->view('pages/refund', $data);
+               exit;
+           }
 
             foreach($invoiceid  as  $key=>$invid){
 
@@ -103,10 +123,11 @@ class Invoicing extends PostController
                     $this->storeRefund($invid, $refundamount, $productid, $refundquantity,
                         $discountamt, $invoicecode, $finalpayment, $invoicedate);
 
-                    $newrefunddata[] = ['refunddate'=>$invoicedate, 'quantity'=>$refundquantity,
-                                     'productid'=>$productid, 'invoicecode'=>$invoicecode, 'amount'=>$refundamount];
+                    $newrefunddata[] = ['refunddate' => $invoicedate, 'quantity' => $refundquantity,
+                        'productid' => $productid, 'invoicecode' => $invoicecode, 'amount' => $refundamount];
                     //product changes
                     $this->refundproductchanges($productid, $refundquantity, $type);
+
                 }
             }
 
@@ -685,9 +706,9 @@ class Invoicing extends PostController
         $p->store();
 
         if($catid == 15){
-            $telephone = '0263200066'; // Accessorries
+            $telephone = '0243144908'; // Accessorries
         }elseif($catid == 16){
-            $telephone = '0558216152';  // Profile
+            $telephone = '0243144908';  // Profile
         }elseif($catid == 17){
             $telephone = '0243144908'; // Glass
         }
@@ -727,9 +748,9 @@ class Invoicing extends PostController
 
 
         if($catid == 15){
-            $telephone = '0263200066'; // Accessorries
+            $telephone = '0243144908'; // Accessorries
         }elseif($catid == 16){
-            $telephone = '0558216152';  // Profile
+            $telephone = '0243144908';  // Profile
         }elseif($catid == 17){
             $telephone = '0243144908'; // Glass
         }
