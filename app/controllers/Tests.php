@@ -37,6 +37,7 @@ class Tests extends Controller {
     }
 
     public function xml(){
+
         header('Content-type: text/xml');
         $xm =  new Xmlreport();
         $test  = $xm->createXml();

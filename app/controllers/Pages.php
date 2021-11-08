@@ -104,7 +104,6 @@ class Pages extends Controller{
     }
 
     public function edituser($uid){
-
         new Guard();
         new RoleGuard('Configure User');
         $userdata  = new User($uid);

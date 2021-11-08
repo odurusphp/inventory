@@ -84,6 +84,12 @@
             </li>
 
             <li>
+                <a  href="<?php echo URLROOT.'/refunds' ?>"  class="waves-effect">
+                    <i class="fa fa-shopping-cart"></i> <span>Refund Reports</span>
+                </a>
+            </li>
+
+            <li>
                     <a  href="<?php echo URLROOT.'/search' ?>"  class="waves-effect">
                         <i class="fa fa-search"></i> <span>Search Invoice</span>
                     </a>
