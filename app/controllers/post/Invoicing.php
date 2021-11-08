@@ -64,7 +64,7 @@ class Invoicing extends PostController
 
 
             if($refundcount > 0){
-                $refunddata = Refund::listAll();
+                $refunddata = [];
                 $message = 'Refund quantity cannot be more than quantity on invoice';
                 $data = ['refunddata' => $refunddata, 'historydata'=>[], 'message'=>$message ];
                 $this->view('pages/refund', $data);
@@ -136,7 +136,7 @@ class Invoicing extends PostController
             $this->paymentrefund($invoicecode, $totalrefund);
 
             //History  and refund Data
-            $refunddata = Refund::listAll();
+            //$refunddata = Refund::listAll();
             $historydata = Refund::getRefundDetails($invoicecode);
 
             //update refund status  to zero;
@@ -147,7 +147,7 @@ class Invoicing extends PostController
             //print refund
             $this->printRefund($newrefunddata, $totalrefund, $invoicecode);
 
-            $data = ['refunddata' => $refunddata, 'historydata'=>$historydata,
+            $data = ['refunddata' => $historydata, 'historydata'=>$historydata,
                 'message'=>$message ];
             $this->view('pages/refund', $data);
             exit;
@@ -156,8 +156,8 @@ class Invoicing extends PostController
         if(isset($_POST['searchinvoice'])) {
             $invoicecode = trim($_POST['invoicecode']);
             $invoicedata = Invoices::getInvoiceBYCode($invoicecode);
-            $refunddata = Refund::listAll();
-            $data = ['invoiceitems' => $invoicedata, 'refunddata' => $refunddata];
+           // $refunddata = Refund::listAll();
+            $data = ['invoiceitems' => $invoicedata, 'refunddata' => $invoicedata];
             $this->view('pages/refund', $data);
             exit;
         }

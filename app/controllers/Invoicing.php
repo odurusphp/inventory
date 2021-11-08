@@ -32,7 +32,7 @@ class Invoicing extends Controller
         new Guard();
         new RoleGuard('Refund Invoice');
 
-        $refunddata = Refund::listAll();
+        $refunddata = [];
         $data = ['refunddata' => $refunddata];
         $this->view('pages/refund', $data);
     }
