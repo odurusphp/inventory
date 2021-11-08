@@ -6,8 +6,7 @@
   </div><!--End wrapper-->
 
   <script src="<?php echo URLROOT.'/backoffice/'?>js/jquery.min.js"></script>
-    <script src="/backoffice/js/jquery-1.10.2.js"></script>
-    <script src="/backoffice/js/jquery-ui-1.10.0.custom.js"></script>
+    <script src="/backoffice/js/jquery-1.10.2.js"></script><script src="/backoffice/js/jquery-ui-1.10.0.custom.js"></script>
   <script src="<?php echo URLROOT.'/backoffice/'?>js/popper.min.js"></script>
   <script src="<?php echo URLROOT.'/backoffice/'?>js/bootstrap.min.js"></script>
   <script src="<?php echo URLROOT.'/backoffice/'?>plugins/simplebar/js/simplebar.js"></script>
