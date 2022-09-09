@@ -13,8 +13,14 @@ class Pages extends PostController {
             if($usercount > 0){
                 $info = User::userinfo($email);
                 $userid = $info->uid;
+                $role = $info->role;
                 $_SESSION['userid'] = $userid;
+                $_SESSION['role'] = $role;
+                if($role == 1){
                 header('Location:' . URLROOT . '/pages/dashboard');
+                }else{
+                header('Location:' . URLROOT . '/invoicing');
+                }
             }else{
                 $message = ['message'=>'Incorrect email or password'];
                 $this->view('pages/login', $message);
