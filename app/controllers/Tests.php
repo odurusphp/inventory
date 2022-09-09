@@ -830,9 +830,13 @@ class Tests extends Controller {
 
     public function tprint(){
         //$url = URLROOT.'/tests/printer';
-        echo $url = 'http://25cbe74cdf6f.ngrok.io/testprinter/test.php';
-        $tes = file_get_contents($url);
-        var_dump($tes);
+//        echo $url = 'http://25cbe74cdf6f.ngrok.io/testprinter/test.php';
+//        $tes = file_get_contents($url);
+//        var_dump($tes);
+
+        $tes = curl_error_test("http://expamle.com");
+        print_r($tes);
     }
+
 
 }

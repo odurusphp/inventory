@@ -38,8 +38,6 @@ class Tests extends Controller
         //Giving Response if every condition is met
         $rs->returnResponse($_POST);
 
-
-
     }
 
 

@@ -5,6 +5,12 @@ class Pages extends Controller{
 
     public function dashboard(){
         new Guard();
+        
+        if($_SESSION['role'] != 1){
+            header('Location:'. URLROOT .'/errors');
+            exit;
+        }
+
         $today  = date('Y-m-d');
         $allproducts = Invoices::getpurchasestoday();
         $productcount = Product::getProductCount();
@@ -32,6 +38,10 @@ class Pages extends Controller{
 
     public function advancedstock(){
         new Guard();
+        if($_SESSION['role'] != 1){
+            header('Location:'. URLROOT .'/errors');
+            exit;
+        }
         new RoleGuard('Report');
             $today = date('Y-m-d');
             $allproducts = Invoices::getpurchasestoday();
