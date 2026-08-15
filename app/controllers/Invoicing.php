@@ -105,7 +105,7 @@ class Invoicing extends Controller
         $gettotalpayments =  Payments::getPaymentsbyCode($invoicecode);
         $finalamount = $gettotalpayments->finalamount;
         //$totalamtonivoice = $gettotalpayments->amount;
-        $discountpercent = $invoicedata->discount;
+        $discountpercent = isset($gettotalpayments->discount) ? $gettotalpayments->discount : 0;
         $totalamt = $discountpercent + $finalamount;
 
         $idata = [];

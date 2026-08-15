@@ -509,7 +509,7 @@ class Invoicing extends PostController
             'total' => round((float) $finalamount, 2),
             'amountPaid' => round((float) $amountpaid, 2),
             'change' => $balance,
-            'footer' => 'Powered by NM Aluminium. Tel: 0302959686'
+            'footer' => 'Thank you for your business!'
         ];
 
         return $this->sendReceiptToXprinter($receipt);
@@ -561,19 +561,22 @@ class Invoicing extends PostController
     }
 
     public function onlinereprint($invoicecode){
-
         $userid = $_SESSION['userid'];
         $user = new User($userid);
         $name = $user->recordObject->firstname;
 
         $invoicedata = Invoices::getInvoiceBYCode($invoicecode);
         $gettotalpayments =  Payments::getPaymentsbyCode($invoicecode);
-        $finalamount = $gettotalpayments->finalamount;
-        //$totalamtonivoice = $gettotalpayments->amount;
-        $discountpercent = $invoicedata->discount;
-        $totalamt = $discountpercent + $finalamount;
+        if (!$invoicedata || !$gettotalpayments) {
+            error_log('XPrinter reprint failed: invoice '.$invoicecode.' was not found');
+            return false;
+        }
 
-        $idata = [];
+        $finalamount = $gettotalpayments->finalamount;
+        $discount = isset($gettotalpayments->discount) ? $gettotalpayments->discount : 0;
+
+        $items = [];
+        $invoiceDate = null;
         foreach ($invoicedata as $get){
             $amount = $get->amount;
             $quantity = $get->quantity;
@@ -581,37 +584,28 @@ class Invoicing extends PostController
             $productid = $get->productid;
             $pro = new Product($productid);
             $productname = $pro->recordObject->productname;
-            $idata[]  = ['amount'=>$amount, 'product'=>$productname,
-                'quantity'=>$quantity, 'type'=>$type];
+            if ($invoiceDate === null && isset($get->invoicedate)) {
+                $invoiceDate = $get->invoicedate;
+            }
+            $items[] = [
+                'name' => $productname.($type ? ' ('.$type.')' : ''),
+                'quantity' => (float) $quantity,
+                'price' => (float) $amount
+            ];
         }
 
-        $data = json_encode(['invoicedata'=>$idata, 'discountpercent'=>$discountpercent,
-            'finalamount'=>$finalamount, 'name'=>$name, 'invoicecode'=>$invoicecode,
-            'totalamt'=>$totalamt]);
+        $receipt = [
+            'title' => 'OFFICIAL RECEIPT - REPRINT',
+            'receiptNumber' => $invoicecode,
+            'date' => $invoiceDate,
+            'cashier' => $name,
+            'items' => $items,
+            'discount' => round((float) $discount, 2),
+            'total' => round((float) $finalamount, 2),
+            'footer' => 'Thank you for your business!'
+        ];
 
-
-        $curl = curl_init();
-        $url = ENV == 'Pokuase' ? NGROK_URL_POKUASE : NGROK_URL;
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => $url.'/print/reprint.php',
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => "",
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => "POST",
-            CURLOPT_POSTFIELDS =>$data,
-            CURLOPT_HTTPHEADER => array(
-                "Accept: application/json",
-                "Content-Type: application/json"
-            ),
-        ));
-
-        $response = curl_exec($curl);
-        curl_close($curl);
-        //echo $response;
-
+        return $this->sendReceiptToXprinter($receipt);
     }
 
   public function printRefund($refunddata,$totalrefund, $invoicecode)
