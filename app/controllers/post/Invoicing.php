@@ -478,17 +478,14 @@ class Invoicing extends PostController
 
 
     public function onlineprint($discountpercent, $userid, $invoicecode,  $balance = null, $amountpaid = null){
-        $curl = curl_init();
         $user = new User($userid);
         $name = $user->recordObject->firstname;
 
         $invoicedata = Invoices::getInvoiceBYCode($invoicecode);
         $gettotalpayments =  Payments::getPaymentsbyCode($invoicecode);
         $finalamount = $gettotalpayments->finalamount;
-        $totalamtonivoice = $gettotalpayments->amount;
-        $totalamt = $discountpercent + $finalamount;
         $balance = round($balance,2);
-        $idata = [];
+        $items = [];
         foreach ($invoicedata as $get){
             $amount = $get->amount;
             $quantity = $get->quantity;
@@ -496,38 +493,71 @@ class Invoicing extends PostController
             $productid = $get->productid;
             $pro = new Product($productid);
             $productname = $pro->recordObject->productname;
-            $idata[]  = ['amount'=>$amount, 'product'=>$productname,
-                          'quantity'=>$quantity, 'type'=>$type];
-
-
+            $items[] = [
+                'name' => $productname.($type ? ' ('.$type.')' : ''),
+                'quantity' => (float) $quantity,
+                'price' => (float) $amount
+            ];
         }
 
-        $data = json_encode(['invoicedata'=>$idata, 'discountpercent'=>$discountpercent,
-                'finalamount'=>$finalamount, 'name'=>$name, 'invoicecode'=>$invoicecode,
-                 'totalamt'=>$totalamt, 'balance'=>$balance, 'amountpaid'=>$amountpaid]);
+        $receipt = [
+            'title' => 'OFFICIAL RECEIPT',
+            'receiptNumber' => $invoicecode,
+            'cashier' => $name,
+            'items' => $items,
+            'discount' => round((float) $discountpercent, 2),
+            'total' => round((float) $finalamount, 2),
+            'amountPaid' => round((float) $amountpaid, 2),
+            'change' => $balance,
+            'footer' => 'Powered by NM Aluminium. Tel: 0302959686'
+        ];
 
-        $url = ENV == 'Pokuase' ? NGROK_URL_POKUASE : NGROK_URL;
+        return $this->sendReceiptToXprinter($receipt);
+    }
+
+    /**
+     * Send a completed receipt through ngrok to the XPrinter bridge running
+     * on the cashier's Windows computer. Printing errors are logged and do
+     * not roll back an invoice which has already been saved.
+     */
+    private function sendReceiptToXprinter(array $receipt){
+        if (!defined('XPRINTER_API_KEY') || XPRINTER_API_KEY === '') {
+            error_log('XPrinter: XPRINTER_API_KEY is not configured');
+            return false;
+        }
+
+        $baseUrl = ENV == 'Pokuase' ? NGROK_URL_POKUASE : NGROK_URL;
+        $curl = curl_init();
         curl_setopt_array($curl, array(
-
-            CURLOPT_URL => $url.'/print/onlineprint.php',
+            CURLOPT_URL => rtrim($baseUrl, '/').'/print',
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING => "",
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
-            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_MAXREDIRS => 2,
+            CURLOPT_CONNECTTIMEOUT => 5,
+            CURLOPT_TIMEOUT => 15,
+            CURLOPT_FOLLOWLOCATION => false,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => "POST",
-            CURLOPT_POSTFIELDS =>$data,
+            CURLOPT_POSTFIELDS => json_encode($receipt),
             CURLOPT_HTTPHEADER => array(
                 "Accept: application/json",
-                "Content-Type: application/json"
+                "Content-Type: application/json",
+                "X-Printer-Key: ".XPRINTER_API_KEY,
+                "ngrok-skip-browser-warning: true"
             ),
         ));
 
         $response = curl_exec($curl);
+        $curlError = curl_error($curl);
+        $statusCode = (int) curl_getinfo($curl, CURLINFO_HTTP_CODE);
         curl_close($curl);
-        //echo $response;
 
+        if ($response === false || $statusCode < 200 || $statusCode >= 300) {
+            error_log('XPrinter request failed (HTTP '.$statusCode.'): '.($curlError ?: $response));
+            return false;
+        }
+
+        return true;
     }
 
     public function onlinereprint($invoicecode){

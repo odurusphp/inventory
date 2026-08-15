@@ -17,3 +17,5 @@ filetmp/
 public/largefiles/
 public/xml/
 
+xprinter-bridge/
+app/config/printer_env.php
